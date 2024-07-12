@@ -1,0 +1,16 @@
+require 'active_record'
+
+ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: 'db/development.sqlite3')
+
+class CreateCurrencyRatesTable < ActiveRecord::Migration[7.1]
+  def change
+    create_table :currency_rates do |table|
+      table.float :buy
+      table.float :sell
+      table.timestamps
+    end
+  end
+end
+
+# Create the table
+CreateCurrencyRatesTable.migrate(:up)

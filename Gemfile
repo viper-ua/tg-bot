@@ -1,0 +1,11 @@
+source 'https://rubygems.org'
+
+gem 'activerecord'
+gem 'dotenv'
+gem 'faraday'
+gem 'gruff'
+gem 'sqlite3', '~> 1.4'
+gem 'rake'
+gem 'rufus-scheduler'
+gem 'telegram-bot-ruby'
+gem 'pry'
