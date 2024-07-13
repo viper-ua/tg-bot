@@ -1,6 +1,6 @@
 require 'active_record'
 
-ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: 'db/development.sqlite3')
+ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: "#{__dir__}/../development.sqlite3")
 
 class CreateCurrencyRatesTable < ActiveRecord::Migration[7.1]
   def change
