@@ -46,7 +46,7 @@ end
 # Store rate in the database and maintain only last 10 records
 def store_rate(buy, sell)
   CurrencyRate.create(buy: buy, sell: sell)
-  CurrencyRate.order(:created_at).first.destroy if CurrencyRate.count > 10
+  CurrencyRate.order(:created_at).first.destroy if CurrencyRate.count > MAX_RECORDS
 end
 
 # Generate graph of last 10 rates
@@ -54,7 +54,7 @@ def generate_buy_sell_graph
   g = Gruff::Line.new
   g.title = 'USD Buy/Sell Rates'
 
-  rates = CurrencyRate.order(:created_at).last(10)
+  rates = CurrencyRate.order(:created_at)
   buy_rates = rates.map(&:buy)
   sell_rates = rates.map(&:sell)
   labels = rates.each_with_index.map { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M')] }.to_h
@@ -75,7 +75,7 @@ def generate_ratio_graph
   g = Gruff::Line.new
   g.title = 'USD Sell/Buy Ratios'
 
-  rates = CurrencyRate.order(:created_at).last(10)
+  rates = CurrencyRate.order(:created_at).last(30)
   labels = rates.each_with_index.map { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M')] }.to_h
 
   g.data(:Ratio, rates.map {|rate| (rate.sell/rate.buy).round(4)})
@@ -103,12 +103,23 @@ def rates_differ?(rates)
   previous_rate.sell != rates[:sell] && previous_rates.buy != rates[:buy]
 end
 
+def log_record(message)
+  puts "#### #{Time.now} #{message} ####"
+end
+
 # Notify and store rates
-rates = fetch_rates
-if rates_differ?(rates)
-  store_rate(rates[:buy], rates[:sell])
-  image_path = generate_buy_sell_graph
-  send_to_telegram(message(rates), image_path)
-  image_path = generate_ratio_graph
-  send_to_telegram(message(rates), image_path)
+begin
+  rates = fetch_rates
+  if rates_differ?(rates)
+    log_record rates
+    store_rate(rates[:buy], rates[:sell])
+    image_path = generate_buy_sell_graph
+    send_to_telegram(message(rates), image_path)
+    image_path = generate_ratio_graph
+    send_to_telegram(message(rates), image_path)
+  else
+    log_record "Rates are the same - skipping main logic"
+  end
+rescue => e
+  log_record "#{e.class} - #{e.message}"
 end
