@@ -98,10 +98,17 @@ def message(rates)
   MESSAGE
 end
 
+def rates_differ?(rates)
+  previous_rate = CurrencyRate.order(:created_at).first
+  previous_rate.sell != rates[:sell] && previous_rates.buy != rates[:buy]
+end
+
 # Notify and store rates
 rates = fetch_rates
-store_rate(rates[:buy], rates[:sell])
-image_path = generate_buy_sell_graph
-send_to_telegram(message(rates), image_path)
-image_path = generate_ratio_graph
-send_to_telegram(message(rates), image_path)
+if rates_differ?(rates)
+  store_rate(rates[:buy], rates[:sell])
+  image_path = generate_buy_sell_graph
+  send_to_telegram(message(rates), image_path)
+  image_path = generate_ratio_graph
+  send_to_telegram(message(rates), image_path)
+end
