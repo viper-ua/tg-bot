@@ -102,8 +102,12 @@ def message(rates)
 end
 
 def rates_differ?(rates)
-  previous_rate = CurrencyRate.order(:created_at).first
-  previous_rate.sell != rates[:sell] && previous_rates.buy != rates[:buy]
+  previous_rates = CurrencyRate.order(:created_at).last
+
+  return true if previous_rates.nil?
+  return true if Time.now > previous_rates.created_at + 1.day
+
+  previous_rates.sell != rates[:sell] && previous_rates.buy != rates[:buy]
 end
 
 def log_record(message)
