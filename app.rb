@@ -97,7 +97,7 @@ def message(rates)
   <<~MESSAGE
     #{Time.now}
     USD Buy: #{rates[:buy]}, USD Sell: #{rates[:sell]}
-    Ratio: #{ratio.round(4)}
+    Ratio: #{ratio.round(4)} (₴#{((rates[:sell] - rates[:buy]) * 1000).round(2)})
   MESSAGE
 end
 
