@@ -92,12 +92,14 @@ def generate_ratio_graph
 end
 
 def message(rates)
-  ratio = rates[:sell] / rates[:buy]
+  ratio = (rates[:sell] / rates[:buy] - 1).round(4) * 100
+  commission = ((rates[:sell] - rates[:buy]) * 1000).round(2)
+  
 
   <<~MESSAGE
     #{Time.now}
     USD Buy: #{rates[:buy]}, USD Sell: #{rates[:sell]}
-    Ratio: #{ratio.round(4)} (₴#{((rates[:sell] - rates[:buy]) * 1000).round(2)})
+    Ratio: #{ratio} (₴#{commission})
   MESSAGE
 end
 
