@@ -12,6 +12,8 @@ MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
 USD = 840
 UAH = 980
 
+GRAPH_DIMENSIONS = '1280x720'
+
 # Database configuration
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
@@ -21,7 +23,7 @@ ActiveRecord::Base.establish_connection(
 # CurrencyRate model
 class CurrencyRate < ActiveRecord::Base
   MAX_RECORDS = 30
-  
+
   # Keep only last MAX_RECORDS
   def self.perform_housekeeping
     rate_ids_to_keep = CurrencyRate.select(:id).order(created_at: :desc).limit(MAX_RECORDS)
@@ -52,44 +54,48 @@ def send_to_telegram(message, image_path)
   end
 end
 
-# Generate graph of last 10 rates
-def generate_buy_sell_graph
-  g = Gruff::Line.new
-  g.title = 'USD Buy/Sell Rates'
-
-  rates = CurrencyRate.order(:created_at)
-  buy_rates = rates.map(&:buy)
-  sell_rates = rates.map(&:sell)
-  labels = rates.each_with_index.map { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M')] }.to_h
-
-  g.data(:Buy, buy_rates)
-  g.data(:Sell, sell_rates)
-  g.labels = labels
-  g.minimum_value = 40.0
-  g.label_rotation = 45.0
-
-  image_path = 'rates.png'
-  g.write(image_path)
-  image_path
+def rates
+  @rates ||= CurrencyRate.order(:created_at)
 end
 
-# Generate graph of last 10 Sell/Buy ratios
-def generate_ratio_graph
-  g = Gruff::Line.new
-  g.title = 'USD Sell/Buy Ratios'
+def labels
+  @labels ||= rates.each_with_index
+                   .map { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M ')] }
+                   .to_h
+end
 
-  rates = CurrencyRate.order(:created_at)
-  labels = rates.each_with_index.map { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M')] }.to_h
+# Generate graph of last rates
+def buy_sell_graph(image_path: 'rates.png')
+  return @buy_sell_graph_path if @buy_sell_graph_path
+  
+  Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
+    graph.title = 'USD Buy/Sell Rates'
+    graph.data(:Buy, rates.map(&:buy))
+    graph.data(:Sell, rates.map(&:sell))
+    graph.labels = labels
+    graph.minimum_value = rates.map(&:buy).min
+    graph.maximum_value = rates.map(&:sell).max
+    graph.label_rotation = -45.0
+    graph.write(image_path)
+  end
+  @buy_sell_graph_path = image_path
+end
 
-  g.data(:Ratio, rates.map { |rate| (rate.sell / rate.buy).round(4) })
-  g.labels = labels
-  g.label_rotation = 45.0
-  g.maximum_value = 1.015
-  g.minimum_value = 1.005
-
-  image_path = 'ratios.png'
-  g.write(image_path)
-  image_path
+# Generate graph of last Sell/Buy ratios
+def ratio_graph(image_path: 'ratios.png')
+  return @ratio_graph_path if @ratio_graph_path
+  
+  data_points = rates.map { |rate| (rate.sell / rate.buy - 1).round(4) * 100 }
+  Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
+    graph.title = 'USD Sell/Buy Ratios'
+    graph.data(:Ratio, data_points)
+    graph.labels = labels
+    graph.label_rotation = -45.0
+    graph.minimum_value = data_points.min
+    graph.maximum_value = data_points.max
+    graph.write(image_path)
+  end
+  @ratio_graph_path = image_path
 end
 
 def message(rates)
@@ -118,20 +124,18 @@ end
 
 # Notify and store rates
 begin
-  rates = fetch_rates
+  current_rates = fetch_rates
 
-  if same_rates?(rates)
+  if same_rates?(current_rates)
     log_record 'Rates are the same - skipping main logic'
     return
   end
 
-  log_record rates
-  CurrencyRate.create(buy: rates[:buy], sell: rates[:sell])
+  log_record current_rates
+  CurrencyRate.create(buy: current_rates[:buy], sell: current_rates[:sell])
   CurrencyRate.perform_housekeeping
-  image_path = generate_buy_sell_graph
-  send_to_telegram(message(rates), image_path)
-  image_path = generate_ratio_graph
-  send_to_telegram(message(rates), image_path)
+  send_to_telegram(message(current_rates), buy_sell_graph)
+  send_to_telegram(message(current_rates), ratio_graph)
 rescue StandardError => e
   log_record "#{e.class} - #{e.message}"
 end
