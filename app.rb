@@ -95,7 +95,6 @@ def message(rates)
   ratio = (rates[:sell] / rates[:buy] - 1).round(4) * 100
   commission = ((rates[:sell] - rates[:buy]) * 1000).round(2)
   
-
   <<~MESSAGE
     #{Time.now}
     USD Buy: #{rates[:buy]}, USD Sell: #{rates[:sell]}
@@ -103,13 +102,13 @@ def message(rates)
   MESSAGE
 end
 
-def rates_differ?(rates)
+def same_rates?(rates)
   previous_rates = CurrencyRate.order(:created_at).last
 
-  return true if previous_rates.nil?
-  return true if Time.now > previous_rates.created_at + 1.day
+  return false if previous_rates.nil?
+  return false if Time.now > previous_rates.created_at + 1.day
 
-  previous_rates.sell != rates[:sell] && previous_rates.buy != rates[:buy]
+  previous_rates.sell == rates[:sell] && previous_rates.buy == rates[:buy]
 end
 
 def log_record(message)
@@ -119,16 +118,18 @@ end
 # Notify and store rates
 begin
   rates = fetch_rates
-  if rates_differ?(rates)
-    log_record rates
-    store_rate(rates[:buy], rates[:sell])
-    image_path = generate_buy_sell_graph
-    send_to_telegram(message(rates), image_path)
-    image_path = generate_ratio_graph
-    send_to_telegram(message(rates), image_path)
-  else
+  
+  if same_rates?(rates)
     log_record 'Rates are the same - skipping main logic'
+    return
   end
+    
+  log_record rates
+  store_rate(rates[:buy], rates[:sell])
+  image_path = generate_buy_sell_graph
+  send_to_telegram(message(rates), image_path)
+  image_path = generate_ratio_graph
+  send_to_telegram(message(rates), image_path)
 rescue StandardError => e
   log_record "#{e.class} - #{e.message}"
 end
