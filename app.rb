@@ -99,7 +99,7 @@ def message(rates)
   <<~MESSAGE
     #{Time.now}
     USD Buy: #{rates[:buy]}, USD Sell: #{rates[:sell]}
-    Ratio: #{ratio} (₴#{commission})
+    Ratio: #{ratio}% (₴#{commission})
   MESSAGE
 end
 
