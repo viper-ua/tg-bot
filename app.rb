@@ -9,7 +9,6 @@ require 'telegram/bot'
 require 'pry'
 
 MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
-MAX_RECORDS = 30
 USD = 840
 UAH = 980
 
@@ -20,7 +19,15 @@ ActiveRecord::Base.establish_connection(
 )
 
 # CurrencyRate model
-class CurrencyRate < ActiveRecord::Base; end
+class CurrencyRate < ActiveRecord::Base
+  MAX_RECORDS = 30
+  
+  # Keep only last MAX_RECORDS
+  def self.perform_housekeeping
+    rate_ids_to_keep = CurrencyRate.select(:id).order(created_at: :desc).limit(MAX_RECORDS)
+    CurrencyRate.where.not(id: rate_ids_to_keep).destroy_all
+  end
+end
 
 # Fetch rates from Monobank API
 def fetch_rates
@@ -43,12 +50,6 @@ def send_to_telegram(message, image_path)
       photo: Faraday::UploadIO.new(image_path, 'image/png')
     )
   end
-end
-
-# Store rate in the database and maintain only last 10 records
-def store_rate(buy, sell)
-  CurrencyRate.create(buy:, sell:)
-  CurrencyRate.order(:created_at).first.destroy if CurrencyRate.count > MAX_RECORDS
 end
 
 # Generate graph of last 10 rates
@@ -94,7 +95,7 @@ end
 def message(rates)
   ratio = (rates[:sell] / rates[:buy] - 1).round(4) * 100
   commission = ((rates[:sell] - rates[:buy]) * 1000).round(2)
-  
+
   <<~MESSAGE
     #{Time.now}
     USD Buy: #{rates[:buy]}, USD Sell: #{rates[:sell]}
@@ -118,14 +119,15 @@ end
 # Notify and store rates
 begin
   rates = fetch_rates
-  
+
   if same_rates?(rates)
     log_record 'Rates are the same - skipping main logic'
     return
   end
-    
+
   log_record rates
-  store_rate(rates[:buy], rates[:sell])
+  CurrencyRate.create(buy: rates[:buy], sell: rates[:sell])
+  CurrencyRate.perform_housekeeping
   image_path = generate_buy_sell_graph
   send_to_telegram(message(rates), image_path)
   image_path = generate_ratio_graph
