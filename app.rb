@@ -22,7 +22,7 @@ ActiveRecord::Base.establish_connection(
 
 # CurrencyRate model
 class CurrencyRate < ActiveRecord::Base
-  MAX_RECORDS = 30
+  MAX_RECORDS = 20
 
   # Keep only last MAX_RECORDS
   def self.perform_housekeeping
