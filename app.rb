@@ -42,14 +42,25 @@ def fetch_rates
   { buy: usd_rate['rateBuy'], sell: usd_rate['rateSell'] }
 end
 
-# Send message and graph to Telegram
-def send_to_telegram(message, image_path)
+# Send message and graphs to Telegram
+def send_to_telegram(message)
   Telegram::Bot::Client.run(ENV['TELEGRAM_TOKEN']) do |bot|
-    # bot.api.send_message(chat_id: ENV['TELEGRAM_CHAT_ID'], text: message)
-    bot.api.send_photo(
+    bot.api.send_media_group(
       chat_id: ENV['TELEGRAM_CHAT_ID'],
+      media: [
+        Telegram::Bot::Types::InputMediaPhoto.new(
+          caption: message,
+          media: "attach://#{buy_sell_graph}",
+          show_caption_above_media: true
+        ),
+        Telegram::Bot::Types::InputMediaPhoto.new(
       caption: message,
-      photo: Faraday::UploadIO.new(image_path, 'image/png')
+          media: "attach://#{ratio_graph}",
+          show_caption_above_media: true
+        )
+      ],
+      "#{buy_sell_graph}": Faraday::UploadIO.new(buy_sell_graph, 'image/png'),
+      "#{ratio_graph}": Faraday::UploadIO.new(ratio_graph, 'image/png')
     )
   end
 end
@@ -134,8 +145,7 @@ begin
   log_record current_rates
   CurrencyRate.create(buy: current_rates[:buy], sell: current_rates[:sell])
   CurrencyRate.perform_housekeeping
-  send_to_telegram(message(current_rates), buy_sell_graph)
-  send_to_telegram(message(current_rates), ratio_graph)
+  send_to_telegram(message(current_rates))
 rescue StandardError => e
   log_record "#{e.class} - #{e.message}"
 end
