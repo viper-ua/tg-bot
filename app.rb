@@ -117,6 +117,8 @@ def message(rates)
     #{Time.now}
     USD Buy: #{rates[:buy]}, USD Sell: #{rates[:sell]}
     Ratio: #{ratio}% (₴#{commission})
+    50K amount: $#{(50_000 / rates[:sell]).round(2)}
+    To sell: $#{(50_000 / rates[:buy]).round(2)}
   MESSAGE
 end
 
