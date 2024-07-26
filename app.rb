@@ -10,7 +10,7 @@ require 'telegram/bot'
 MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
 USD = 840
 UAH = 980
-NBU_LIMIT = 50_000
+NBU_LIMIT = 50_000.0
 
 GRAPH_DIMENSIONS = '1280x720'
 
@@ -120,7 +120,7 @@ def message(rates)
     Ratio: #{ratio.round(2)}% (₴#{commission})
     50K amount: $#{(NBU_LIMIT / sell).round(2)}
     To sell: $#{(NBU_LIMIT / buy).round(2)}
-    Diff: $#{(NBU_LIMIT * (1 / buy - 1 / sell)).round(2)}
+    Diff: $#{(NBU_LIMIT * (1.0 / buy - 1.0 / sell)).round(2)}
   MESSAGE
 end
 
