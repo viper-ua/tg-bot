@@ -6,11 +6,11 @@ require 'faraday'
 require 'gruff'
 require 'rufus-scheduler'
 require 'telegram/bot'
-require 'pry'
 
 MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
 USD = 840
 UAH = 980
+NBU_LIMIT = 50_000
 
 GRAPH_DIMENSIONS = '1280x720'
 
@@ -110,19 +110,23 @@ def ratio_graph(image_path: 'ratios.png')
 end
 
 def message(rates)
-  ratio = (rates[:sell] / rates[:buy] - 1).round(4) * 100
-  commission = ((rates[:sell] - rates[:buy]) * 1000).round(2)
+  sell, buy = rates[:sell], rates[:buy]
+  ratio = (sell / buy - 1) * 100
+  commission = ((sell - buy) * 1000).round(2)
 
   <<~MESSAGE
     #{Time.now}
-    USD Buy: #{rates[:buy]}, USD Sell: #{rates[:sell]}
-    Ratio: #{ratio}% (₴#{commission})
-    50K amount: $#{(50_000 / rates[:sell]).round(2)}
-    To sell: $#{(50_000 / rates[:buy]).round(2)}
+    USD Buy: #{buy}, USD Sell: #{sell}
+    Ratio: #{ratio.round(2)}% (₴#{commission})
+    50K amount: $#{(NBU_LIMIT / sell).round(2)}
+    To sell: $#{(NBU_LIMIT / buy).round(2)}
+    Diff: $#{(NBU_LIMIT * (1 / buy - 1 / sell)).round(2)}
   MESSAGE
 end
 
 def same_rates?(rates)
+  return false if ENV['SEND_ANYWAY'] == 'yes'
+
   previous_rates = CurrencyRate.order(:created_at).last
 
   return false if previous_rates.nil?
