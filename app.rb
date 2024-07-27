@@ -3,16 +3,15 @@
 require 'active_record'
 require 'dotenv/load'
 require 'faraday'
-require 'gruff'
-require 'rufus-scheduler'
 require 'telegram/bot'
+require 'pry'
+
+require_relative 'lib/graph_generator'
 
 MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
 USD = 840
 UAH = 980
 NBU_LIMIT = 50_000.0
-
-GRAPH_DIMENSIONS = '1280x720'
 
 # Database configuration
 ActiveRecord::Base.establish_connection(
@@ -50,17 +49,17 @@ def send_to_telegram(message)
       media: [
         Telegram::Bot::Types::InputMediaPhoto.new(
           caption: message,
-          media: "attach://#{buy_sell_graph}",
+          media: "attach://#{@buy_sell_graph}",
           show_caption_above_media: true
         ),
         Telegram::Bot::Types::InputMediaPhoto.new(
-      caption: message,
-          media: "attach://#{ratio_graph}",
+          caption: message,
+          media: "attach://#{@ratio_graph}",
           show_caption_above_media: true
         )
       ],
-      "#{buy_sell_graph}": Faraday::UploadIO.new(buy_sell_graph, 'image/png'),
-      "#{ratio_graph}": Faraday::UploadIO.new(ratio_graph, 'image/png')
+      "#{@buy_sell_graph}": Faraday::UploadIO.new(@buy_sell_graph, 'image/png'),
+      "#{@ratio_graph}": Faraday::UploadIO.new(@ratio_graph, 'image/png')
     )
   end
 end
@@ -75,42 +74,9 @@ def labels
                    .to_h
 end
 
-# Generate graph of last rates
-def buy_sell_graph(image_path: 'rates.png')
-  return @buy_sell_graph_path if @buy_sell_graph_path
-  
-  Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
-    graph.title = 'USD Buy/Sell Rates'
-    graph.data(:Buy, rates.map(&:buy))
-    graph.data(:Sell, rates.map(&:sell))
-    graph.labels = labels
-    graph.minimum_value = rates.map(&:buy).min
-    graph.maximum_value = rates.map(&:sell).max
-    graph.label_rotation = -45.0
-    graph.write(image_path)
-  end
-  @buy_sell_graph_path = image_path
-end
-
-# Generate graph of last Sell/Buy ratios
-def ratio_graph(image_path: 'ratios.png')
-  return @ratio_graph_path if @ratio_graph_path
-  
-  data_points = rates.map { |rate| (rate.sell / rate.buy - 1).round(4) * 100 }
-  Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
-    graph.title = 'USD Sell/Buy Ratios'
-    graph.data(:Ratio, data_points)
-    graph.labels = labels
-    graph.label_rotation = -45.0
-    graph.minimum_value = data_points.min
-    graph.maximum_value = data_points.max
-    graph.write(image_path)
-  end
-  @ratio_graph_path = image_path
-end
-
 def message(rates)
-  sell, buy = rates[:sell], rates[:buy]
+  sell = rates[:sell]
+  buy = rates[:buy]
   ratio = (sell / buy - 1) * 100
   commission = ((sell - buy) * 1000).round(2)
 
@@ -139,6 +105,12 @@ def log_record(message)
   puts "#### #{Time.now} #{message} ####"
 end
 
+def generate_graphs
+  generator = GraphGenerator.new(rates:)
+  @buy_sell_graph = generator.buy_sell_graph
+  @ratio_graph = generator.ratio_graph
+end
+
 # Notify and store rates
 begin
   current_rates = fetch_rates
@@ -151,6 +123,7 @@ begin
   log_record current_rates
   CurrencyRate.create(buy: current_rates[:buy], sell: current_rates[:sell])
   CurrencyRate.perform_housekeeping
+  generate_graphs
   send_to_telegram(message(current_rates))
 rescue StandardError => e
   log_record "#{e.class} - #{e.message}"
