@@ -64,33 +64,31 @@ def send_to_telegram(message)
   end
 end
 
-def rates
+def historical_rates
   @rates ||= CurrencyRate.order(:created_at)
 end
 
 def labels
-  @labels ||= rates.each_with_index
+  @labels ||= historical_rates.each_with_index
                    .map { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M ')] }
                    .to_h
 end
 
 def message(rates)
-  sell = rates[:sell]
-  buy = rates[:buy]
-  ratio = (sell / buy - 1) * 100
-  commission = ((sell - buy) * 1000).round(2)
+  ratio = (rates.sell / rates.buy - 1) * 100
+  commission = ((rates.sell - rates.buy) * 1000).round(2)
 
   <<~MESSAGE
     #{Time.now}
-    USD Buy: #{buy}, USD Sell: #{sell}
+    USD Buy: #{rates.buy}, USD Sell: #{rates.sell}
     Ratio: #{ratio.round(2)}% (₴#{commission})
-    50K amount: $#{(NBU_LIMIT / sell).round(2)}
-    To sell: $#{(NBU_LIMIT / buy).round(2)}
-    Diff: $#{(NBU_LIMIT * (1.0 / buy - 1.0 / sell)).round(2)}
+    50K amount: $#{(NBU_LIMIT / rates.sell).round(2)}
+    To sell: $#{(NBU_LIMIT / rates.buy).round(2)}
+    Diff: $#{(NBU_LIMIT * (1.0 / rates.buy - 1.0 / rates.sell)).round(2)}
   MESSAGE
 end
 
-def same_rates?(rates)
+def should_send_a_message?(fetched_rates)
   return false if ENV['SEND_ANYWAY'] == 'yes'
 
   previous_rates = CurrencyRate.order(:created_at).last
@@ -98,7 +96,7 @@ def same_rates?(rates)
   return false if previous_rates.nil?
   return false if Time.now > previous_rates.created_at + 1.day
 
-  previous_rates.sell == rates[:sell] && previous_rates.buy == rates[:buy]
+  previous_rates.sell == fetched_rates.sell && previous_rates.buy == fetched_rates.buy
 end
 
 def log_record(message)
@@ -106,25 +104,25 @@ def log_record(message)
 end
 
 def generate_graphs
-  generator = GraphGenerator.new(rates:)
+  generator = GraphGenerator.new(rates: historical_rates)
   @buy_sell_graph = generator.buy_sell_graph
   @ratio_graph = generator.ratio_graph
 end
 
 # Notify and store rates
 begin
-  current_rates = fetch_rates
+  fetched_rates = CurrencyRate.build(fetch_rates)
 
-  if same_rates?(current_rates)
+  if should_send_a_message?(fetched_rates)
     log_record 'Rates are the same - skipping main logic'
     return
   end
 
-  log_record current_rates
-  CurrencyRate.create(buy: current_rates[:buy], sell: current_rates[:sell])
+  fetched_rates.save!
+  log_record "#{fetched_rates.attributes}"
   CurrencyRate.perform_housekeeping
   generate_graphs
-  send_to_telegram(message(current_rates))
+  send_to_telegram(message(fetched_rates))
 rescue StandardError => e
   log_record "#{e.class} - #{e.message}"
 end
