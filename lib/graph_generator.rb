@@ -10,6 +10,8 @@ class GraphGenerator
     @rates = rates
   end
 
+  attr_reader :rates
+
   # Generate graph of last rates
   def buy_sell_graph(image_path: 'rates.png')
     Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
