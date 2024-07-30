@@ -29,7 +29,7 @@ class GraphGenerator
 
   # Generate graph of last Sell/Buy ratios
   def ratio_graph(image_path: 'ratios.png')
-    data_points = rates.map { |rate| (rate.sell / rate.buy - 1).round(4) * 100 }
+    data_points = rates.map { |rate| ((rate.sell / rate.buy) - 1).round(4) * 100 }
     Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
       graph.title = 'USD Sell/Buy Ratios'
       graph.data(:Ratio, data_points)

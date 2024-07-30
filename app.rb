@@ -16,7 +16,7 @@ NBU_LIMIT = 50_000.0
 
 # Fetch rates from Monobank API
 def fetch_rates
-  return { buy: rand(40.0..41.0).round(4), sell: rand(41.0..42.0).round(4)} if test_run?
+  return { buy: rand(40.0..41.0).round(4), sell: rand(41.0..42.0).round(4) } if test_run?
 
   response = Faraday.get(MONOBANK_API_URL)
   data = JSON.parse(response.body)
@@ -32,14 +32,14 @@ def historical_rates
 end
 
 def labels
-  @labels ||= historical_rates.each_with_index
-                   .map { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M ')] }
-                   .to_h
+  @labels ||= historical_rates
+              .each_with_index
+              .to_h { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M ')] }
 end
 
 def message
   rates = @fetched_rates
-  ratio = (rates.sell / rates.buy - 1) * 100
+  ratio = ((rates.sell / rates.buy) - 1) * 100
   commission = ((rates.sell - rates.buy) * 1000).round(2)
 
   <<~MESSAGE
@@ -48,7 +48,7 @@ def message
     <b>Ratio:</b> #{ratio.round(2)}% (₴#{commission})
     <b>50K amount:</b> $#{(NBU_LIMIT / rates.sell).round(2)}
     <b>To sell:</b> $#{(NBU_LIMIT / rates.buy).round(2)}
-    <b>Diff:</b> $#{(NBU_LIMIT * (1.0 / rates.buy - 1.0 / rates.sell)).round(2)}
+    <b>Diff:</b> $#{(NBU_LIMIT * ((1.0 / rates.buy) - (1.0 / rates.sell))).round(2)}
   MESSAGE
 end
 
@@ -84,7 +84,7 @@ begin
   end
 
   @fetched_rates.save! unless test_run?
-  log_record "#{@fetched_rates.attributes}"
+  log_record @fetched_rates.attributes.to_s
   CurrencyRate.perform_housekeeping
   TelegramApi.send_message(images:, message:)
 rescue StandardError => e

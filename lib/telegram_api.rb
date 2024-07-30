@@ -7,14 +7,14 @@ require 'telegram/bot'
 class TelegramApi
   def self.send_message(...) = new.send_message(...)
 
-  def initialize(bot_token: ENV['TELEGRAM_TOKEN'])
+  def initialize(bot_token: ENV.fetch('TELEGRAM_TOKEN', nil))
     @bot_token = bot_token
   end
 
   attr_reader :bot_token
   private :bot_token
 
-  def send_message(chat_id: ENV['TELEGRAM_CHAT_ID'], images:, message:)
+  def send_message(images:, message:, chat_id: ENV.fetch('TELEGRAM_CHAT_ID', nil))
     Telegram::Bot::Client.run(bot_token) do |bot|
       bot.api.send_media_group(
         { chat_id: }.merge(compose_media_group(images:, message:))
@@ -26,10 +26,9 @@ class TelegramApi
 
   def compose_media_group(images:, message:)
     empty_group = { media: [] }
-    images.inject(empty_group) do |group, image_name|
+    images.each_with_object(empty_group) do |image_name, group|
       group[:media] << media_definition(image_name:, message:)
       group[image_name] = Faraday::UploadIO.new(image_name, 'image/png')
-      group
     end
   end
 
