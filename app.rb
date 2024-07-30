@@ -32,6 +32,8 @@ end
 
 # Fetch rates from Monobank API
 def fetch_rates
+  return { buy: rand(40.0..41.0), sell: rand(41.0..42.0)} if test_run?
+
   response = Faraday.get(MONOBANK_API_URL)
   data = JSON.parse(response.body)
 
@@ -88,8 +90,12 @@ def message(rates)
   MESSAGE
 end
 
+def test_run?
+  ENV['TEST_RUN'] == 'yes'
+end
+
 def should_send_a_message?(fetched_rates)
-  return false if ENV['SEND_ANYWAY'] == 'yes'
+  return false if test_run?
 
   previous_rates = CurrencyRate.order(:created_at).last
 
@@ -118,7 +124,7 @@ begin
     return
   end
 
-  fetched_rates.save!
+  fetched_rates.save! unless test_run?
   log_record "#{fetched_rates.attributes}"
   CurrencyRate.perform_housekeeping
   generate_graphs
