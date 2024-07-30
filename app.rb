@@ -44,7 +44,7 @@ def fetch_rates
 end
 
 def historical_rates
-  @rates ||= CurrencyRate.order(:created_at)
+  @historical_rates ||= CurrencyRate.order(:created_at)
 end
 
 def labels
@@ -53,17 +53,18 @@ def labels
                    .to_h
 end
 
-def message(rates)
+def message
+  rates = @fetched_rates
   ratio = (rates.sell / rates.buy - 1) * 100
   commission = ((rates.sell - rates.buy) * 1000).round(2)
 
   <<~MESSAGE
-    #{Time.now}
+    <b><i>#{Time.now}</i></b>
     <b>USD Buy:</b> #{rates.buy}, <b>USD Sell:</b> #{rates.sell}
-    Ratio: #{ratio.round(2)}% (₴#{commission})
-    50K amount: $#{(NBU_LIMIT / rates.sell).round(2)}
-    To sell: $#{(NBU_LIMIT / rates.buy).round(2)}
-    Diff: $#{(NBU_LIMIT * (1.0 / rates.buy - 1.0 / rates.sell)).round(2)}
+    <b>Ratio:</b> #{ratio.round(2)}% (₴#{commission})
+    <b>50K amount:</b> $#{(NBU_LIMIT / rates.sell).round(2)}
+    <b>To sell:</b> $#{(NBU_LIMIT / rates.buy).round(2)}
+    <b>Diff:</b> $#{(NBU_LIMIT * (1.0 / rates.buy - 1.0 / rates.sell)).round(2)}
   MESSAGE
 end
 
@@ -71,15 +72,13 @@ def test_run?
   ENV['TEST_RUN'] == 'yes'
 end
 
-def should_send_a_message?(fetched_rates)
-  return false if test_run?
-
+def same_rates?
   previous_rates = CurrencyRate.order(:created_at).last
 
   return false if previous_rates.nil?
   return false if Time.now > previous_rates.created_at + 1.day
 
-  previous_rates.sell == fetched_rates.sell && previous_rates.buy == fetched_rates.buy
+  previous_rates.sell == @fetched_rates.sell && previous_rates.buy == @fetched_rates.buy
 end
 
 def log_record(message)
@@ -93,17 +92,17 @@ end
 
 # Notify and store rates
 begin
-  fetched_rates = CurrencyRate.build(fetch_rates)
+  @fetched_rates = CurrencyRate.build(fetch_rates)
 
-  if should_send_a_message?(fetched_rates)
+  if !test_run? && same_rates?
     log_record 'Rates are the same - skipping main logic'
     return
   end
 
-  fetched_rates.save! unless test_run?
-  log_record "#{fetched_rates.attributes}"
+  @fetched_rates.save! unless test_run?
+  log_record "#{@fetched_rates.attributes}"
   CurrencyRate.perform_housekeeping
-  TelegramApi.send_message(images:, message: message(fetched_rates))
+  TelegramApi.send_message(images:, message:)
 rescue StandardError => e
   log_record "#{e.class} - #{e.message}"
 end
