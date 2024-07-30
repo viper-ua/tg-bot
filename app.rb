@@ -5,6 +5,7 @@ require 'dotenv/load'
 require 'faraday'
 require 'pry'
 
+require_relative 'lib/data_model'
 require_relative 'lib/graph_generator'
 require_relative 'lib/telegram_api'
 
@@ -12,23 +13,6 @@ MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
 USD = 840
 UAH = 980
 NBU_LIMIT = 50_000.0
-
-# Database configuration
-ActiveRecord::Base.establish_connection(
-  adapter: 'sqlite3',
-  database: "#{__dir__}/db/development.sqlite3"
-)
-
-# CurrencyRate model
-class CurrencyRate < ActiveRecord::Base
-  MAX_RECORDS = 20
-
-  # Keep only last MAX_RECORDS
-  def self.perform_housekeeping
-    rate_ids_to_keep = CurrencyRate.select(:id).order(created_at: :desc).limit(MAX_RECORDS)
-    CurrencyRate.where.not(id: rate_ids_to_keep).destroy_all
-  end
-end
 
 # Fetch rates from Monobank API
 def fetch_rates
