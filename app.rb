@@ -33,8 +33,10 @@ end
 
 def labels
   @labels ||= historical_rates
+              .map { |rate| rate.created_at.strftime('%d-%m-%y') }
               .each_with_index
-              .to_h { |rate, index| [index, rate.created_at.strftime('%d-%m-%y %H:%M ')] }
+              .chunk_while { |date1, date2| date1[0] == date2[0] }
+              .to_h { |chunk| chunk.first.reverse }
 end
 
 def message

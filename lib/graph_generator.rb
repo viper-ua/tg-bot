@@ -36,6 +36,7 @@ class GraphGenerator
 
   def graph_with_default_setup(image_path:)
     Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
+      graph.show_vertical_markers = true
       graph.labels = labels
       graph.label_rotation = -45.0
       graph.hide_dots = true
