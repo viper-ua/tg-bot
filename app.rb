@@ -3,10 +3,10 @@
 require 'active_record'
 require 'dotenv/load'
 require 'faraday'
-require 'telegram/bot'
 require 'pry'
 
 require_relative 'lib/graph_generator'
+require_relative 'lib/telegram_api'
 
 MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
 USD = 840
@@ -32,7 +32,7 @@ end
 
 # Fetch rates from Monobank API
 def fetch_rates
-  return { buy: rand(40.0..41.0), sell: rand(41.0..42.0)} if test_run?
+  return { buy: rand(40.0..41.0).round(4), sell: rand(41.0..42.0).round(4)} if test_run?
 
   response = Faraday.get(MONOBANK_API_URL)
   data = JSON.parse(response.body)
@@ -41,29 +41,6 @@ def fetch_rates
 
   usd_rate = data.find { |rate| rate['currencyCodeA'] == USD && rate['currencyCodeB'] == UAH }
   { buy: usd_rate['rateBuy'], sell: usd_rate['rateSell'] }
-end
-
-# Send message and graphs to Telegram
-def send_to_telegram(message)
-  Telegram::Bot::Client.run(ENV['TELEGRAM_TOKEN']) do |bot|
-    bot.api.send_media_group(
-      chat_id: ENV['TELEGRAM_CHAT_ID'],
-      media: [
-        Telegram::Bot::Types::InputMediaPhoto.new(
-          caption: message,
-          media: "attach://#{@buy_sell_graph}",
-          show_caption_above_media: true
-        ),
-        Telegram::Bot::Types::InputMediaPhoto.new(
-          caption: message,
-          media: "attach://#{@ratio_graph}",
-          show_caption_above_media: true
-        )
-      ],
-      "#{@buy_sell_graph}": Faraday::UploadIO.new(@buy_sell_graph, 'image/png'),
-      "#{@ratio_graph}": Faraday::UploadIO.new(@ratio_graph, 'image/png')
-    )
-  end
 end
 
 def historical_rates
@@ -82,7 +59,7 @@ def message(rates)
 
   <<~MESSAGE
     #{Time.now}
-    USD Buy: #{rates.buy}, USD Sell: #{rates.sell}
+    <b>USD Buy:</b> #{rates.buy}, <b>USD Sell:</b> #{rates.sell}
     Ratio: #{ratio.round(2)}% (₴#{commission})
     50K amount: $#{(NBU_LIMIT / rates.sell).round(2)}
     To sell: $#{(NBU_LIMIT / rates.buy).round(2)}
@@ -109,10 +86,9 @@ def log_record(message)
   puts "#### #{Time.now} #{message} ####"
 end
 
-def generate_graphs
+def images
   generator = GraphGenerator.new(rates: historical_rates)
-  @buy_sell_graph = generator.buy_sell_graph
-  @ratio_graph = generator.ratio_graph
+  [generator.buy_sell_graph, generator.ratio_graph]
 end
 
 # Notify and store rates
@@ -127,8 +103,7 @@ begin
   fetched_rates.save! unless test_run?
   log_record "#{fetched_rates.attributes}"
   CurrencyRate.perform_housekeeping
-  generate_graphs
-  send_to_telegram(message(fetched_rates))
+  TelegramApi.send_message(images:, message: message(fetched_rates))
 rescue StandardError => e
   log_record "#{e.class} - #{e.message}"
 end
