@@ -34,6 +34,16 @@ class GraphGenerator
     end
   end
 
+  def diff_graph(image_path: 'diff.png')
+    data_points = rates.map { |rate| (NBU_LIMIT * ((1.0 / rate.buy) - (1.0 / rate.sell))).round(2) }
+    graph_with_default_setup(image_path:) do |graph|
+      graph.title = 'Conversion difference, $'
+      graph.data(:Difference, data_points)
+      graph.minimum_value = data_points.min
+      graph.maximum_value = data_points.max
+    end
+  end
+
   def graph_with_default_setup(image_path:)
     Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
       graph.show_vertical_markers = true

@@ -72,7 +72,11 @@ end
 
 def images
   generator = GraphGenerator.new(rates: historical_rates)
-  [generator.buy_sell_graph, generator.ratio_graph]
+  [
+    generator.buy_sell_graph,
+    generator.ratio_graph,
+    generator.diff_graph
+  ]
 end
 
 # Notify and store rates
