@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'active_record'
 require 'dotenv/load'
 require 'faraday'
 require 'pry'

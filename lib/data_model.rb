@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'active_record'
+
 # Database configuration
 ActiveRecord::Base.establish_connection(
   adapter: 'sqlite3',
