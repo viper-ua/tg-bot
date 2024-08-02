@@ -14,12 +14,15 @@ class GraphGenerator
 
   # Generate graph of last rates
   def buy_sell_graph(image_path: 'rates.png')
-    graph_with_default_setup(image_path:) do |graph|
-      graph.title = 'USD Buy/Sell Rates'
-      graph.data(:Buy, rates.map(&:buy))
-      graph.data(:Sell, rates.map(&:sell))
-      graph.minimum_value = rates.map(&:buy).min
-      graph.maximum_value = rates.map(&:sell).max
+    graph_with_default_setup(graph_class: Gruff::Candlestick, image_path:) do |graph|
+      rates.each do |rate|
+        graph.data(low: rate.buy, high: rate.sell, open: rate.buy, close: rate.sell)
+      end
+      graph.title = "USD Rates\n#{rates.last.buy}/#{rates.last.sell}"
+      # graph.data(:Buy, rates.map(&:buy))
+      # graph.data(:Sell, rates.map(&:sell))
+      graph.minimum_value = rates.map(&:buy).min - 0.15
+      graph.maximum_value = rates.map(&:sell).max + 0.15
     end
   end
 
@@ -44,12 +47,12 @@ class GraphGenerator
     end
   end
 
-  def graph_with_default_setup(image_path:)
-    Gruff::Line.new(GRAPH_DIMENSIONS).tap do |graph|
-      graph.show_vertical_markers = true
+  def graph_with_default_setup(graph_class: Gruff::Line, image_path:)
+    graph_class.new(GRAPH_DIMENSIONS).tap do |graph|
+      graph.show_vertical_markers = true if graph.is_a?(Gruff::Line)
       graph.labels = labels
       graph.label_rotation = -45.0
-      graph.hide_dots = true
+      graph.hide_dots = true if graph.is_a?(Gruff::Line)
       yield graph
       graph.write(image_path)
     end

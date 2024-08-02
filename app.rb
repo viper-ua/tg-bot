@@ -61,7 +61,7 @@ def same_rates?
   previous_rates = CurrencyRate.order(:created_at).last
 
   return false if previous_rates.nil?
-  return false if Time.now > previous_rates.created_at + 1.day
+  return false if Time.now.hour == 9 && (Time.now.day != previous_rates.created_at.day)
 
   previous_rates.sell == @fetched_rates.sell && previous_rates.buy == @fetched_rates.buy
 end
@@ -71,12 +71,11 @@ def log_record(message)
 end
 
 def images
-  generator = GraphGenerator.new(rates: historical_rates)
-  [
-    generator.buy_sell_graph,
-    generator.ratio_graph,
-    generator.diff_graph
-  ]
+  GraphGenerator.new(rates: historical_rates).yield_self do |g|
+    [:buy_sell_graph, :ratio_graph, :diff_graph].map do |name|
+      g.public_send(name)
+    end
+  end
 end
 
 # Notify and store rates
