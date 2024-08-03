@@ -27,9 +27,7 @@ def fetch_rates
   { buy: usd_rate['rateBuy'], sell: usd_rate['rateSell'] }
 end
 
-def test_run?
-  ENV['TEST_RUN'] == 'yes'
-end
+def test_run? = ENV['TEST_RUN'] == 'yes'
 
 def same_rates?
   previous_rates = CurrencyRate.last_known_rate
@@ -37,16 +35,12 @@ def same_rates?
   return false if previous_rates.nil?
   return false if Time.now.hour == 9 && (Time.now.day != previous_rates.created_at.day)
 
-  previous_rates.sell == @fetched_rates.sell && previous_rates.buy == @fetched_rates.buy
+  previous_rates.sell == fetched_rates.sell && previous_rates.buy == fetched_rates.buy
 end
 
-def log_record(message)
-  puts "#### #{Time.now} #{message} ####"
-end
+def log_record(message) = puts("#{Time.now} #{message}")
 
-def message
-  MessageGenerator.new(rates: @fetched_rates).message
-end
+def message = MessageGenerator.new(rates: @fetched_rates).message
 
 def images
   GraphGenerator.new(rates: CurrencyRate.historical_rates).yield_self do |g|
@@ -57,11 +51,7 @@ end
 # Notify and store rates
 begin
   @fetched_rates = CurrencyRate.build(fetch_rates)
-
-  if !test_run? && same_rates?
-    log_record 'Rates are the same - skipping main logic'
-    return
-  end
+  return if !test_run? && same_rates?
 
   @fetched_rates.save! unless test_run?
   log_record @fetched_rates.attributes.to_s
