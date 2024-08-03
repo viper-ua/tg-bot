@@ -32,7 +32,7 @@ end
 
 def labels
   @labels ||= historical_rates
-              .map { |rate| rate.created_at.strftime('%d-%m-%y') }
+              .pluck('DATE(created_at)')
               .each_with_index
               .chunk_while { |date1, date2| date1[0] == date2[0] }
               .to_h { |chunk| chunk.first.reverse }
@@ -70,11 +70,11 @@ def log_record(message)
   puts "#### #{Time.now} #{message} ####"
 end
 
+IMAGE_SET = [:buy_sell_graph, :ratio_graph, :diff_graph]
+
 def images
   GraphGenerator.new(rates: historical_rates).yield_self do |g|
-    [:buy_sell_graph, :ratio_graph, :diff_graph].map do |name|
-      g.public_send(name)
-    end
+    IMAGE_SET.map { |name| g.public_send(name) }
   end
 end
 
