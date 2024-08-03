@@ -1,9 +1,12 @@
 # frozen_string_literal: true
 
 require 'gruff'
+require_relative 'calculation_helpers'
 
 # Graph generator adapter class
 class GraphGenerator
+  include CalculationHelpers
+
   GRAPH_DIMENSIONS = '1280x720'
 
   def initialize(rates:)
@@ -28,7 +31,7 @@ class GraphGenerator
 
   # Generate graph of last Sell/Buy ratios
   def ratio_graph(image_path: 'ratios.png')
-    data_points = rates.map { |rate| ((rate.sell / rate.buy) - 1).round(4) * 100 }
+    data_points = rates.map { |rate| ratio(rate) }
     graph_with_default_setup(image_path:) do |graph|
       graph.title = 'USD Sell/Buy Ratios'
       graph.data(:Ratio, data_points)
@@ -38,7 +41,7 @@ class GraphGenerator
   end
 
   def diff_graph(image_path: 'diff.png')
-    data_points = rates.map { |rate| (NBU_LIMIT * ((1.0 / rate.buy) - (1.0 / rate.sell))).round(2) }
+    data_points = rates.map { |rate| conversion_diff(rate) }
     graph_with_default_setup(image_path:) do |graph|
       graph.title = 'Conversion difference, $'
       graph.data(:Difference, data_points)
@@ -57,5 +60,13 @@ class GraphGenerator
       graph.write(image_path)
     end
     image_path
+  end
+
+  def labels
+    @labels ||= rates
+                .pluck('DATE(created_at)')
+                .each_with_index
+                .chunk_while { |date1, date2| date1[0] == date2[0] }
+                .to_h { |chunk| chunk.first.reverse }
   end
 end

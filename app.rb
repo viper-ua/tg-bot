@@ -6,12 +6,13 @@ require 'pry'
 
 require_relative 'lib/data_model'
 require_relative 'lib/graph_generator'
+require_relative 'lib/message_generator'
 require_relative 'lib/telegram_api'
 
 MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
 USD = 840
 UAH = 980
-NBU_LIMIT = 50_000.0
+IMAGE_SET = [:buy_sell_graph, :ratio_graph, :diff_graph]
 
 # Fetch rates from Monobank API
 def fetch_rates
@@ -26,39 +27,12 @@ def fetch_rates
   { buy: usd_rate['rateBuy'], sell: usd_rate['rateSell'] }
 end
 
-def historical_rates
-  @historical_rates ||= CurrencyRate.order(:created_at)
-end
-
-def labels
-  @labels ||= historical_rates
-              .pluck('DATE(created_at)')
-              .each_with_index
-              .chunk_while { |date1, date2| date1[0] == date2[0] }
-              .to_h { |chunk| chunk.first.reverse }
-end
-
-def message
-  rates = @fetched_rates
-  ratio = ((rates.sell / rates.buy) - 1) * 100
-  commission = ((rates.sell - rates.buy) * 1000).round(2)
-
-  <<~MESSAGE
-    <b><i>#{Time.now}</i></b>
-    <b>USD Buy:</b> #{rates.buy}, <b>USD Sell:</b> #{rates.sell}
-    <b>Ratio:</b> #{ratio.round(2)}% (₴#{commission})
-    <b>50K amount:</b> $#{(NBU_LIMIT / rates.sell).round(2)}
-    <b>To sell:</b> $#{(NBU_LIMIT / rates.buy).round(2)}
-    <b>Diff:</b> $#{(NBU_LIMIT * ((1.0 / rates.buy) - (1.0 / rates.sell))).round(2)}
-  MESSAGE
-end
-
 def test_run?
   ENV['TEST_RUN'] == 'yes'
 end
 
 def same_rates?
-  previous_rates = CurrencyRate.order(:created_at).last
+  previous_rates = CurrencyRate.last_known_rate
 
   return false if previous_rates.nil?
   return false if Time.now.hour == 9 && (Time.now.day != previous_rates.created_at.day)
@@ -70,10 +44,12 @@ def log_record(message)
   puts "#### #{Time.now} #{message} ####"
 end
 
-IMAGE_SET = [:buy_sell_graph, :ratio_graph, :diff_graph]
+def message
+  MessageGenerator.new(rates: @fetched_rates).message
+end
 
 def images
-  GraphGenerator.new(rates: historical_rates).yield_self do |g|
+  GraphGenerator.new(rates: CurrencyRate.historical_rates).yield_self do |g|
     IMAGE_SET.map { |name| g.public_send(name) }
   end
 end

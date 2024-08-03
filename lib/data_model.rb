@@ -12,9 +12,17 @@ ActiveRecord::Base.establish_connection(
 class CurrencyRate < ActiveRecord::Base
   MAX_RECORDS = 30
 
-  # Keep only last MAX_RECORDS
-  def self.perform_housekeeping
-    rate_ids_to_keep = CurrencyRate.select(:id).order(created_at: :desc).limit(MAX_RECORDS)
-    CurrencyRate.where.not(id: rate_ids_to_keep).destroy_all
+  scope :historical_rates, -> { order(:created_at) }
+
+  class << self
+    # Keep only last MAX_RECORDS
+    def perform_housekeeping
+      rate_ids_to_keep = select(:id).order(created_at: :desc).limit(MAX_RECORDS)
+      where.not(id: rate_ids_to_keep).destroy_all
+    end
+
+    def last_known_rate
+      historical_rates.last
+    end
   end
 end
