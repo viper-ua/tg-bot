@@ -18,7 +18,6 @@ class GraphGenerator
   # Generate graph of last rates
   def buy_sell_graph(image_path: 'rates.png')
     graph_with_default_setup(graph_class: Gruff::Candlestick, image_path:) do |graph|
-      min_diff_id = rates.min_by { |rate| rate.sell - rate.buy }.id
       rates.each do |rate|
         next graph.data(low: rate.buy, high: rate.sell, open: rate.sell, close: rate.buy) if rate.id == min_diff_id
 
@@ -72,4 +71,6 @@ class GraphGenerator
                 .chunk_while { |date1, date2| date1[0] == date2[0] }
                 .to_h { |chunk| chunk.first.reverse }
   end
+
+  def min_diff_id = rates.min_by { |rate| rate.sell - rate.buy }.id
 end
