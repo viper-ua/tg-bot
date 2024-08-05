@@ -2,6 +2,7 @@
 
 require_relative 'calculation_helpers'
 
+# Class responsible for message generation, with rates and some indicators
 class MessageGenerator
   include CalculationHelpers
 
@@ -10,7 +11,7 @@ class MessageGenerator
   end
 
   attr_reader :rates
-  
+
   def message
     <<~MESSAGE
       <b><i>#{Time.now}</i></b>
@@ -20,5 +21,5 @@ class MessageGenerator
       <b>To sell:</b> $#{sell_to_limit(rates)}
       <b>Diff:</b> $#{conversion_diff(rates)}
     MESSAGE
-    end
+  end
 end

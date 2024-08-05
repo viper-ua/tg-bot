@@ -1,6 +1,9 @@
+# frozen_string_literal: true
+
+# Various calculations for rates analysis
 module CalculationHelpers
   NBU_LIMIT = 50_000.0
-  
+
   def ratio(rates) = (((rates.sell / rates.buy) - 1) * 100).round(2)
   def commission(rates) = ((rates.sell - rates.buy) * 1000).round(2)
   def max_to_buy(rates) = (NBU_LIMIT / rates.sell).round(2)

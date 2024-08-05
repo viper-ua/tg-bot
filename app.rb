@@ -12,7 +12,7 @@ require_relative 'lib/telegram_api'
 MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
 USD = 840
 UAH = 980
-IMAGE_SET = [:buy_sell_graph, :ratio_graph, :diff_graph]
+IMAGE_SET = %i[buy_sell_graph ratio_graph diff_graph].freeze
 
 # Fetch rates from Monobank API
 def fetch_rates
@@ -43,7 +43,7 @@ def log_record(message) = puts("#{Time.now} #{message}")
 def message = MessageGenerator.new(rates: @fetched_rates).message
 
 def images
-  GraphGenerator.new(rates: CurrencyRate.historical_rates).yield_self do |g|
+  GraphGenerator.new(rates: CurrencyRate.historical_rates).then do |g|
     IMAGE_SET.map { |name| g.public_send(name) }
   end
 end
