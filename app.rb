@@ -35,7 +35,7 @@ def same_rates?
   return false if previous_rates.nil?
   return false if Time.now.hour == 9 && (Time.now.day != previous_rates.created_at.day)
 
-  previous_rates.sell == fetched_rates.sell && previous_rates.buy == fetched_rates.buy
+  previous_rates.sell == @fetched_rates.sell && previous_rates.buy == @fetched_rates.buy
 end
 
 def log_record(message) = puts("#{Time.now} #{message}")
