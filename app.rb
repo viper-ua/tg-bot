@@ -7,25 +7,10 @@ require 'pry'
 require_relative 'lib/data_model'
 require_relative 'lib/graph_generator'
 require_relative 'lib/message_generator'
+require_relative 'lib/mono_api'
 require_relative 'lib/telegram_api'
 
-MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
-USD = 840
-UAH = 980
 IMAGE_SET = %i[buy_sell_graph ratio_graph diff_graph].freeze
-
-# Fetch rates from Monobank API
-def fetch_rates
-  return { buy: rand(40.0..41.0).round(4), sell: rand(41.0..42.0).round(4) } if test_run?
-
-  response = Faraday.get(MONOBANK_API_URL)
-  data = JSON.parse(response.body)
-
-  raise data['errText'].to_s if data.is_a?(Hash)
-
-  usd_rate = data.find { |rate| rate['currencyCodeA'] == USD && rate['currencyCodeB'] == UAH }
-  { buy: usd_rate['rateBuy'], sell: usd_rate['rateSell'] }
-end
 
 def test_run? = ENV['TEST_RUN'] == 'yes'
 
@@ -50,7 +35,7 @@ end
 
 # Notify and store rates
 begin
-  @fetched_rates = CurrencyRate.build(fetch_rates)
+  @fetched_rates = CurrencyRate.build(MonoApi.fetch_rates(test_run: test_run?))
   return if !test_run? && same_rates?
 
   @fetched_rates.save! unless test_run?
