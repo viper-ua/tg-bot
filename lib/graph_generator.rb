@@ -17,23 +17,24 @@ class GraphGenerator
 
   # Generate graph of last rates
   def buy_sell_graph(image_path: 'rates.png')
-    graph_with_default_setup(graph_class: Gruff::Candlestick, image_path:) do |graph|
+    candlestick_graph(image_path:) do |graph|
       rates.each do |rate|
-        next graph.data(low: rate.buy, high: rate.sell, open: rate.sell, close: rate.buy) if rate.id == min_diff_id
+        if rate.id == min_diff_id(rates)
+          next graph.data(low: rate.buy, high: rate.sell, open: rate.sell, close: rate.buy)
+        end
 
         graph.data(low: rate.buy, high: rate.sell, open: rate.buy, close: rate.sell)
       end
       graph.title = "USD Rates\n#{rates.last.buy}/#{rates.last.sell}"
-      graph.minimum_value = rates.map(&:buy).min
-      graph.spacing_factor = 0
-      graph.marker_font_size = 14
+      graph.y_axis_increment = 0.25
+      graph.minimum_value =  min_rate_in_increments(rates, 0.25)
     end
   end
 
   # Generate graph of last Sell/Buy ratios
   def ratio_graph(image_path: 'ratios.png')
     data_points = rates.map { |rate| ratio(rate) }
-    graph_with_default_setup(image_path:) do |graph|
+    line_graph(image_path:) do |graph|
       graph.title = 'USD Sell/Buy Ratios'
       graph.data(:Ratio, data_points)
       graph.minimum_value = data_points.min
@@ -43,7 +44,7 @@ class GraphGenerator
 
   def diff_graph(image_path: 'diff.png')
     data_points = rates.map { |rate| conversion_diff(rate) }
-    graph_with_default_setup(image_path:) do |graph|
+    line_graph(image_path:) do |graph|
       graph.title = 'Conversion difference, $'
       graph.data(:Difference, data_points)
       graph.minimum_value = data_points.min
@@ -51,18 +52,38 @@ class GraphGenerator
     end
   end
 
-  def graph_with_default_setup(image_path:, graph_class: Gruff::Line)
+  # Common setup for all graphs
+  def graph_with_common_setup(image_path:, graph_class:)
     graph_class.new(GRAPH_DIMENSIONS).tap do |graph|
-      graph.show_vertical_markers = true if graph.is_a?(Gruff::Line)
       graph.labels = labels
       graph.label_rotation = -45.0
-      graph.hide_dots = true if graph.is_a?(Gruff::Line)
+      graph.marker_font_size = 14
+      graph.marker_color = 'grey'
       yield graph
       graph.write(image_path)
     end
     image_path
   end
 
+  # Common setup for Line graphs
+  def line_graph(image_path:)
+    graph_with_common_setup(image_path:, graph_class: Gruff::Line) do |graph|
+      graph.show_vertical_markers = true
+      graph.hide_dots = true
+      yield graph
+    end
+  end
+
+  # Common setup for Candlestick graphs
+  def candlestick_graph(image_path:)
+    graph_with_common_setup(image_path:, graph_class: Gruff::Candlestick) do |graph|
+      graph.spacing_factor = 0
+      graph.fill_opacity = 0.75
+      yield graph
+    end
+  end
+
+  # Graph labels in mm/dd format, one for each date
   def labels
     @labels ||= rates
                 .pluck('DATE(created_at)')
@@ -71,6 +92,4 @@ class GraphGenerator
                 .to_h { |chunk| chunk.first.reverse }
                 .transform_values { |v| v.split('-')[1..].join('/') }
   end
-
-  def min_diff_id = rates.min_by { |rate| rate.sell - rate.buy }.id
 end
