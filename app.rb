@@ -39,7 +39,6 @@ begin
 
   @fetched_rates.save! unless test_run?
   logger.info(@fetched_rates.attributes.to_s)
-  CurrencyRate.perform_housekeeping
   TelegramApi.send_message(images:, message:)
 rescue StandardError => e
   logger.error("#{e.class} - #{e.message}")

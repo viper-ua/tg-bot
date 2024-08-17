@@ -11,17 +11,11 @@ ActiveRecord::Base.establish_connection(
 # CurrencyRate model
 class CurrencyRate < ActiveRecord::Base
   COMPARISON_ATTRIBUTES = %i[buy sell].freeze
-  MAX_RECORDS = 30
+  MAX_HISTORICAL_RECORDS = 30
 
-  scope :historical_rates, -> { order(:created_at) }
+  scope :historical_rates, ->(max_records = MAX_HISTORICAL_RECORDS) { order(:created_at).limit(max_records) }
 
   class << self
-    # Keep only last MAX_RECORDS
-    def perform_housekeeping
-      rate_ids_to_keep = select(:id).order(created_at: :desc).limit(MAX_RECORDS)
-      where.not(id: rate_ids_to_keep).destroy_all
-    end
-
     def last_known_rate
       historical_rates.last
     end
