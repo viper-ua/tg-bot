@@ -20,22 +20,22 @@ def images
 end
 
 def message = MessageGenerator.new(rates: @fetched_rates).message
+
 def test_run? = ENV['TEST_RUN'] == 'yes'
+def time_to_report? = (Time.now.hour == REPORTING_HOUR) && CurrencyRate.no_rates_for_today
 
 def same_rates?
   previous_rates = CurrencyRate.last_known_rate
-
   return false if previous_rates.nil?
-  return false if (Time.now.hour == REPORTING_HOUR) && (Time.now.day != previous_rates.created_at.day)
 
-  previous_rates.sell == @fetched_rates.sell && previous_rates.buy == @fetched_rates.buy
+  previous_rates == @fetched_rates
 end
 
 # Notify and store rates
 begin
   logger = Logger.new($stdout)
   @fetched_rates = CurrencyRate.build(MonoApi.fetch_rates(test_run: test_run?))
-  return if !test_run? && same_rates?
+  return if !test_run? && !time_to_report? && same_rates?
 
   @fetched_rates.save! unless test_run?
   logger.info(@fetched_rates.attributes.to_s)
