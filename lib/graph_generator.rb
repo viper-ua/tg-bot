@@ -24,10 +24,9 @@ class GraphGenerator
         graph.data(low: rate.buy, high: rate.sell, open: rate.buy, close: rate.sell)
       end
       graph.title = "USD Rates\n#{rates.last.buy}/#{rates.last.sell}"
-      # graph.data(:Buy, rates.map(&:buy))
-      # graph.data(:Sell, rates.map(&:sell))
-      graph.minimum_value = rates.map(&:buy).min - 0.15
-      graph.maximum_value = rates.map(&:sell).max + 0.15
+      graph.minimum_value = rates.map(&:buy).min
+      graph.spacing_factor = 0
+      graph.marker_font_size = 14
     end
   end
 
@@ -70,6 +69,7 @@ class GraphGenerator
                 .each_with_index
                 .chunk_while { |date1, date2| date1[0] == date2[0] }
                 .to_h { |chunk| chunk.first.reverse }
+                .transform_values { |v| v.split('-')[1..].join('/') }
   end
 
   def min_diff_id = rates.min_by { |rate| rate.sell - rate.buy }.id

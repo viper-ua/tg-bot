@@ -14,9 +14,7 @@ REPORTING_HOUR = 9
 IMAGE_SET = %i[buy_sell_graph ratio_graph diff_graph].freeze
 
 def images
-  GraphGenerator.new(rates: CurrencyRate.historical_rates).then do |g|
-    IMAGE_SET.map { |name| g.public_send(name) }
-  end
+  GraphGenerator.new(rates: CurrencyRate.historical_rates).then { |g| IMAGE_SET.map { |name| g.public_send(name) } }
 end
 
 def message = MessageGenerator.new(rates: @fetched_rates).message
