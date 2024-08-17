@@ -1,4 +1,8 @@
-inherit_from: .rubocop_todo.yml
-
 AllCops:
   NewCops: enable
+
+Metrics/AbcSize:
+  Max: 30
+
+Layout/LineLength:
+  Max: 120
