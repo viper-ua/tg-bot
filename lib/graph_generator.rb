@@ -26,8 +26,8 @@ class GraphGenerator
         graph.data(low: rate.buy, high: rate.sell, open: rate.buy, close: rate.sell)
       end
       graph.title = "USD Rates\n#{rates.last.buy}/#{rates.last.sell}"
-      graph.y_axis_increment = 0.25
-      graph.minimum_value =  min_rate_in_increments(rates, 0.25)
+      graph.y_axis_increment = 0.1
+      graph.minimum_value =  min_rate_in_increments(rates, 0.1)
     end
   end
 
