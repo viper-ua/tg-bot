@@ -11,7 +11,7 @@ ActiveRecord::Base.establish_connection(
 # CurrencyRate model
 class CurrencyRate < ActiveRecord::Base
   COMPARISON_ATTRIBUTES = %i[buy sell].freeze
-  MAX_HISTORICAL_RECORDS = 30
+  MAX_HISTORICAL_RECORDS = 45
 
   class << self
     def last_known_rate = order(created_at: :desc).take
