@@ -86,10 +86,9 @@ class GraphGenerator
   # Graph labels in mm/dd format, one for each date
   def labels
     @labels ||= rates
-                .pluck('DATE(created_at)')
+                .map { |rate| rate.created_at.strftime('%m/%d') }
                 .each_with_index
                 .chunk_while { |date1, date2| date1[0] == date2[0] }
                 .to_h { |chunk| chunk.first.reverse }
-                .transform_values { |v| v.split('-')[1..].join('/') }
   end
 end
