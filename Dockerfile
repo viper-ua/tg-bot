@@ -30,5 +30,9 @@ COPY --from=dependencies /usr/local/bundle /usr/local/bundle
 # Copying application code
 COPY . .
 
-# Running an app
-CMD ["ruby", "app.rb"]
+# Create a wrapper script for running the app
+RUN touch /app/app.log && \
+    chmod 644 /app/app.log
+
+# Command to execute when container starts
+CMD ["/app/run.sh"]
