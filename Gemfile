@@ -2,13 +2,18 @@
 
 source 'https://rubygems.org'
 
-gem 'activerecord'
-gem 'dotenv'
-gem 'faraday'
-gem 'gruff'
-gem 'pry-byebug'
-gem 'rake'
-gem 'rubocop'
-gem 'rufus-scheduler'
-gem 'sqlite3', '~> 1.4'
-gem 'telegram-bot-ruby'
+group :production do
+  gem 'activerecord'
+  gem 'dotenv'
+  gem 'faraday'
+  gem 'gruff'
+  gem 'rake'
+  gem 'rufus-scheduler'
+  gem 'sqlite3', '~> 1.4'
+  gem 'telegram-bot-ruby'
+end
+
+group :development do
+  gem 'pry-byebug'
+  gem 'rubocop'
+end
