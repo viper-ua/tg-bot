@@ -19,9 +19,7 @@ class GraphGenerator
   def buy_sell_graph(image_path: 'rates.png')
     candlestick_graph(image_path:) do |graph|
       rates.each do |rate|
-        if rate.id == min_diff_id(rates)
-          next graph.data(low: rate.buy, high: rate.sell, open: rate.sell, close: rate.buy)
-        end
+        next graph.data(low: rate.buy, high: rate.sell, open: rate.sell, close: rate.buy) if min_diff?(rate)
 
         graph.data(low: rate.buy, high: rate.sell, open: rate.buy, close: rate.sell)
       end
@@ -91,4 +89,8 @@ class GraphGenerator
                 .chunk_while { |date1, date2| date1[0] == date2[0] }
                 .to_h { |chunk| chunk.first.reverse }
   end
+
+  private
+
+  def min_diff?(rate) = rate.id == min_diff_id(rates)
 end
