@@ -1,0 +1,11 @@
+rates.png
+ratios.png
+diff.png
+app.log
+.env*
+Dockerfile
+.dockerignore
+.git*
+.ruby-lsp
+.rubocop.yml
+fixtures
