@@ -36,11 +36,10 @@ scheduler = Rufus::Scheduler.new
 scheduler.cron '*/5 * * * *' do
   logger = Logger.new('app.log')
   @fetched_rates = CurrencyRate.build(MonoApi.fetch_rates(test_run: test_run?))
+  logger.info({ **@fetched_rates.attributes.compact, test_run: test_run? }.to_s)
   next if !test_run? && !time_to_report? && same_rates?
 
   @fetched_rates.save! unless test_run?
-  logger.info(@fetched_rates.attributes.to_s)
-
   TelegramApi.send_message(images:, message:)
 rescue StandardError => e
   logger.error("#{e.class} - #{e.message}")
