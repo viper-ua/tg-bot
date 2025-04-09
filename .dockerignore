@@ -9,3 +9,4 @@ Dockerfile
 .ruby-lsp
 .rubocop.yml
 fixtures
+db
