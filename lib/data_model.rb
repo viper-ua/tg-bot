@@ -8,6 +8,14 @@ ActiveRecord::Base.establish_connection(
   database: "#{__dir__}/../db/development.sqlite3"
 )
 
+unless ActiveRecord::Base.connection.table_exists?(:currency_rates)
+  ActiveRecord::Migration.create_table :currency_rates do |table|
+    table.float :buy
+    table.float :sell
+    table.timestamps
+  end
+end
+
 # CurrencyRate model
 class CurrencyRate < ActiveRecord::Base
   COMPARISON_ATTRIBUTES = %i[buy sell].freeze
