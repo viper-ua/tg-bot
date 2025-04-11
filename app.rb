@@ -1,49 +1,23 @@
 # frozen_string_literal: true
 
 require 'dotenv/load'
-require 'faraday'
 require 'rufus-scheduler'
 
-require_relative 'lib/data_model'
-require_relative 'lib/graph_generator'
-require_relative 'lib/message_generator'
-require_relative 'lib/mono_api'
-require_relative 'lib/telegram_api'
+require_relative 'lib/workflows/usd_rates_update'
 
-REPORTING_HOUR = 9
-IMAGE_SET = %i[buy_sell_graph ratio_graph diff_graph].freeze
+def test_run = ENV['TEST_RUN'] == 'yes'
 
-def images
-  GraphGenerator.new(rates: CurrencyRate.last_rates)
-                .then { |g| IMAGE_SET.map { |name| g.public_send(name) } }
-end
+def logger
+  return @logger if defined?(@logger)
 
-def message = MessageGenerator.new(rates: @fetched_rates).message
-
-def test_run? = ENV['TEST_RUN'] == 'yes'
-def time_to_report? = (Time.now.hour == REPORTING_HOUR) && CurrencyRate.no_rates_for_today
-
-def same_rates?
-  previous_rates = CurrencyRate.last_known_rate
-  return false if previous_rates.nil?
-
-  previous_rates == @fetched_rates
+  @logger = Logger.new('app.log', 'daily')
 end
 
 # Notify and store rates every 5 minutes
-scheduler = Rufus::Scheduler.new
+Rufus::Scheduler.new.tap do |scheduler|
+  scheduler.cron '*/5 * * * *' do
+    UsdRatesUpdate.new(logger:, test_run:).run
+  end
 
-scheduler.cron '*/5 * * * *' do
-  logger = Logger.new('app.log')
-  @fetched_rates = CurrencyRate.build(MonoApi.fetch_rates(test_run: test_run?))
-  logger.info({ **@fetched_rates.attributes.compact, test_run: test_run? }.to_s)
-  next if !test_run? && !time_to_report? && same_rates?
-
-  @fetched_rates.save! unless test_run?
-  TelegramApi.send_message(images:, message:)
-rescue StandardError => e
-  logger.error("#{e.class} - #{e.message}")
+  scheduler.join # Keep the scheduler running
 end
-
-# Keep the scheduler running
-scheduler.join

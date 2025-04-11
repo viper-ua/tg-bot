@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'faraday'
+
 # MonoBank API to fetch currency rates
 class MonoApi
   MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
