@@ -51,6 +51,8 @@ class GraphGenerator
     end
   end
 
+  private
+
   # Common setup for all graphs
   def graph_with_common_setup(image_path:, graph_class:)
     graph_class.new(GRAPH_DIMENSIONS).tap do |graph|
@@ -90,8 +92,6 @@ class GraphGenerator
                 .chunk_while { |date1, date2| date1[0] == date2[0] }
                 .to_h { |chunk| chunk.first.reverse }
   end
-
-  private
 
   def min_diff?(rate) = rate.id == min_diff_id(rates)
 end
