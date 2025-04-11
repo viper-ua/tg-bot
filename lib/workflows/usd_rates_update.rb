@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-require_relative 'lib/data_model'
-require_relative 'lib/graph_generator'
-require_relative 'lib/message_generator'
-require_relative 'lib/mono_api'
-require_relative 'lib/telegram_api'
+require_relative '../apis/mono_api'
+require_relative '../apis/telegram_api'
+require_relative '../data_model'
+require_relative '../generators/graph_generator'
+require_relative '../generators/message_generator'
 
 # UsdRatesUpdate workflow to fetch, save and report USD rates
 # This class is responsible for fetching the USD rates from the MonoBank API,
@@ -31,7 +31,7 @@ class UsdRatesUpdate
       fetched_rates.save! unless test_run
       TelegramApi.send_message(images:, message:)
     rescue StandardError => e
-      logger.error("#{e.class} - #{e.message}")
+      logger.error("#{e.class} - #{e.message}\n#{e.backtrace.join("\n")}")
     end
 
     attr_reader :fetched_rates

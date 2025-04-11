@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'calculation_helpers'
+require_relative '../calculation_helpers'
 
 # Class responsible for message generation, with rates and some indicators
 class MessageGenerator

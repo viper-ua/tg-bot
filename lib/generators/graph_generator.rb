@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'gruff'
-require_relative 'calculation_helpers'
+
+require_relative '../calculation_helpers'
 
 # Graph generator adapter class
 class GraphGenerator
@@ -23,7 +24,7 @@ class GraphGenerator
 
         graph.data(low: rate.buy, high: rate.sell, open: rate.buy, close: rate.sell)
       end
-      graph.title = "USD Rates\n#{rates.last.buy}/#{rates.last.sell}"
+      graph.title = "USD Rates\n#{rates.last&.buy || 'N/A'}/#{rates.last&.sell || 'N/A'}"
       graph.y_axis_increment = 0.1
       graph.minimum_value =  min_rate_in_increments(rates, 0.1)
     end

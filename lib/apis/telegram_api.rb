@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'faraday'
 require 'telegram/bot'
 
 # Class implementing different Telegram API endpoints
