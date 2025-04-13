@@ -17,3 +17,9 @@ group :development do
   gem 'pry-byebug'
   gem 'rubocop'
 end
+
+group :test do
+  gem 'database_cleaner-active_record'
+  gem 'factory_bot'
+  gem 'rspec'
+end
