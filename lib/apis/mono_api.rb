@@ -4,21 +4,31 @@ require 'faraday'
 
 # MonoBank API to fetch currency rates
 class MonoApi
-  MONOBANK_API_URL = 'https://api.monobank.ua/bank/currency'
-  USD = 840
-  UAH = 980
+  API_URLS = {
+    currency: 'https://api.monobank.ua/bank/currency',
+    client_info: 'https://api.monobank.ua/personal/client-info'
+  }.freeze
+
+  CURRENCY_CODES = {
+    usd: 840,
+    uah: 980
+  }.freeze
 
   class << self
     # Fetch rates from Monobank API
     def fetch_rates(test_run: false)
       return random_rates if test_run
 
-      response = Faraday.get(MONOBANK_API_URL)
+      response = Faraday.get(API_URLS[:currency])
       data = JSON.parse(response.body)
 
       raise data['errText'].to_s if data.is_a?(Hash)
 
-      usd_rate = data.find { |rate| rate['currencyCodeA'] == USD && rate['currencyCodeB'] == UAH }
+      usd_rate = data.find do |rate|
+        rate['currencyCodeA'] == CURRENCY_CODES[:usd] &&
+          rate['currencyCodeB'] == CURRENCY_CODES[:uah]
+      end
+
       { buy: usd_rate['rateBuy'], sell: usd_rate['rateSell'] }
     end
 
