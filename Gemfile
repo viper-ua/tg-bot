@@ -4,7 +4,6 @@ source 'https://rubygems.org'
 
 group :production do
   gem 'activerecord'
-  gem 'dotenv'
   gem 'faraday'
   gem 'gruff'
   gem 'rake'
@@ -12,6 +11,8 @@ group :production do
   gem 'sqlite3', '~> 1.4'
   gem 'telegram-bot-ruby'
 end
+
+gem 'dotenv', groups: %i[development test]
 
 group :development do
   gem 'pry-byebug'
