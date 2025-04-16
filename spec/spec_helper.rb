@@ -1,8 +1,11 @@
 # frozen_string_literal: true
 
-require 'factory_bot'
 require 'database_cleaner/active_record'
 require 'dotenv'
+require 'factory_bot'
+require 'vcr'
+require 'webmock/rspec'
+require_relative '../lib/apis/telegram_api'
 require_relative '../lib/data_model'
 require_relative '../lib/calculation_helpers'
 
@@ -22,4 +25,14 @@ RSpec.configure do |config|
       example.run
     end
   end
+end
+
+VCR.configure do |c|
+  c.cassette_library_dir = 'spec/vcr_cassettes'
+  c.hook_into :webmock
+  c.configure_rspec_metadata!
+
+  # Filter sensitive data
+  c.filter_sensitive_data('<TELEGRAM_TOKEN>') { ENV.fetch('TELEGRAM_TOKEN', nil) }
+  c.filter_sensitive_data('<TELEGRAM_CHAT_ID>') { ENV.fetch('TELEGRAM_CHAT_ID', nil) }
 end

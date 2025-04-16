@@ -25,9 +25,10 @@ class TelegramApi
 
   def compose_media_group(images:, message:)
     empty_group = { media: [] }
-    images.each_with_object(empty_group) do |image_name, group|
+    images.each_with_object(empty_group) do |image_path, group|
+      image_name = File.basename(image_path)
       group[:media] << media_definition(image_name:, message:)
-      group[image_name] = Faraday::UploadIO.new(image_name, 'image/png')
+      group[image_name] = Faraday::UploadIO.new(image_path, 'image/png')
     end
   end
 
@@ -35,8 +36,7 @@ class TelegramApi
     Telegram::Bot::Types::InputMediaPhoto.new(
       caption: message,
       media: "attach://#{image_name}",
-      parse_mode: 'HTML',
-      show_caption_above_media: true
+      parse_mode: 'HTML'
     )
   end
 end

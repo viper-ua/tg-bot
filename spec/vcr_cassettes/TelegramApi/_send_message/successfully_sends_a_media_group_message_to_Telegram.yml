@@ -1,0 +1,49 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: https://api.telegram.org/bot<TELEGRAM_TOKEN>/sendMediaGroup
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        LS0tLS0tLS0tLS0tLVJ1YnlNdWx0aXBhcnRQb3N0LWQ2OWU4NDM1NmNlODJmY2UyNzVlZGU3NjgxNWQ4MmQ3DQpDb250ZW50LURpc3Bvc2l0aW9uOiBmb3JtLWRhdGE7IG5hbWU9ImNoYXRfaWQiDQoNCjxURUxFR1JBTV9DSEFUX0lEPg0KLS0tLS0tLS0tLS0tLVJ1YnlNdWx0aXBhcnRQb3N0LWQ2OWU4NDM1NmNlODJmY2UyNzVlZGU3NjgxNWQ4MmQ3DQpDb250ZW50LURpc3Bvc2l0aW9uOiBmb3JtLWRhdGE7IG5hbWU9Im1lZGlhIg0KDQpbeyJ0eXBlIjoicGhvdG8iLCJtZWRpYSI6ImF0dGFjaDovL3Rlc3RfaW1hZ2UucG5nIiwiY2FwdGlvbiI6IkhlbGxvIGZyb20gVkNSIHRlc3QhIiwicGFyc2VfbW9kZSI6IkhUTUwifV0NCi0tLS0tLS0tLS0tLS1SdWJ5TXVsdGlwYXJ0UG9zdC1kNjllODQzNTZjZTgyZmNlMjc1ZWRlNzY4MTVkODJkNw0KQ29udGVudC1EaXNwb3NpdGlvbjogZm9ybS1kYXRhOyBuYW1lPSJ0ZXN0X2ltYWdlLnBuZyI7IGZpbGVuYW1lPSJ0ZXN0X2ltYWdlLnBuZyINCkNvbnRlbnQtTGVuZ3RoOiAxNjMwDQpDb250ZW50LVR5cGU6IGltYWdlL3BuZw0KQ29udGVudC1UcmFuc2Zlci1FbmNvZGluZzogYmluYXJ5DQoNColQTkcNChoKAAAADUlIRFIAAABkAAAAZBAAAAAABRkWywAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAAmJLR0T//xSrMc0AAAAHdElNRQfpBBAKKSOzsHr6AAAFQklEQVR42u3af1DTdRzH8dfGBGGIY3CpmLgh8kNJplMPSRkoE0gxxNSUNKy7JKW6Ug/Sy7ork7oOL+rO2aEg6h2hTEsNlbwlTWATjRy/yl+w0UCQDRDYwb5j/WGcaNuN9Yd84j5Pbnd8v/t+P/d+8N3n9g+srCyMidijPQCFUAjhUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpUQhpjRkIZ/iBdN084dMX1G0+O3tkS03w7y0bFAw/k5ozKCxIHAVIczp7JwDwDII1Ok5HKQDoDyN7JAsF+qy69G3FwJbh5/oKrLJnw3gKUh9VrwaA4I0CaD7WqAEA6pEt5Kccl4+QJ88VVWH+s4KMzT1iLz/lktSp55CpX1mWr1cCALd8WcY0T3d99566uvLUQUHyzpkuwPsNT+6ooT2y5YPW4+3tYt4Ef+NJxYY2c2yGsJRZXb9EobWIACD8j/Bk32L2+u49N59TXbBmAUDQnshJPvKeDRVJwir+5bxs23M8bgRPxH9nis7LS/mJcjw3KmW7PwOwMl+5M739t/WlRS3HXjRJKoDy+w1RwBmdutD2GsHauRevXPmhxjUvadrGhw+1ck5dovgLMQ8AFp2JP9KT8EtCWag5SVIS5gEAoWWrP0NmWchdabxccMveHE49EVZm3Lyu3fm95kLgxqbUNKnscJD32slFPwdc3wr8fpaj4BmA1mPGAOCedOBT26u4uR0NNAbAwq2MC27tuPwhcpvYM8RCtlrA6lzYqOPI9wG4V30ifV2QVpPLSlua8ODr438xfQhoMa9o6TbbnsMpiE8xX1qZxJFxIgDgTvzC6okT+/oHRWLvbpd78xnV6R5sd/xUO78zbgWALjbQlItgAHi4gfs6jlh5B/e7xOMoAIw39fe75gF+Ss8VV41MDADU6pd0w932HF27nYB4v4XkiDMRQ4fVgJeXLr00JtaQHM+otFUNc2o3DxY6WqWvAFcBwCpDrqkA+wDAymN1AsDAfWFzsNxnAf+GRxNgLMIE/jr0Gk7iKwCwZhnF7nW25+hy6qOVBlRWNuU+PtP+JlCt+PPlIPWMU9M9Az4KrzmR5uj7wirDC/bei5eHZzw4rl/ZYNZlJzMAwF4PWC4Mvc9E25/jcQ43excbYGU2znz0Y8phNzLRbgemeVqiqxXFvjktmuypYc+HOVrFflNqwlU1fYflJW9c39q+Y/x7ANDpA/CXD13Bv2FvDqcgbTu6d4tU3CgAGHd61dUV71gPTa7duH12DgAwMW0MMCh79GK/6jzEox5o/ecPEXzTzY3dCDQ3m0JFKpdqABBe875ubw6nIFZZaYDrgVRuZP48YUoKX6rYZhFpOS3nYqYv2z9ni6Qiqr71mF4JmGYBibUilbMQ/eJ+98jJ4kMhN2MNibWWGNdJgEWk0Potfk2zoHPpwTUdjApZtudwCgLc7ijc1aGOiJBILBflvjXvAlbZqVMa16BtccvDPDR7v19r5QF1q3Q9glshLzkLMU05Od9QJJHELZySeP6bqgzfmdxyQLP3/FTO6eiSwC9L2gyXLBdtzzE8Fon/98tudNf3Rg4dvd3VtqM41+E9oz20rTiK9EXSu49+91vs9XnLOcf3uMTGjvbY/84yd9Ku2XrPcK8jQeZl+013fzIz4/6XEOB2B2ID60Ov+Qzc2fTjr32zHN9B5B75LxG5RyhkLEQhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpEUhpPU3YGMSCjc19AAAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjUtMDQtMTZUMTA6NDE6MzUrMDA6MDBk6e/5AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDI1LTA0LTE2VDEwOjQxOjM1KzAwOjAwFbRXRQAAACh0RVh0ZGF0ZTp0aW1lc3RhbXAAMjAyNS0wNC0xNlQxMDo0MTozNSswMDowMEKhdpoAAAAASUVORK5CYIINCi0tLS0tLS0tLS0tLS1SdWJ5TXVsdGlwYXJ0UG9zdC1kNjllODQzNTZjZTgyZmNlMjc1ZWRlNzY4MTVkODJkNy0tDQo=
+    headers:
+      User-Agent:
+      - Faraday v2.10.0
+      Content-Type:
+      - multipart/form-data; boundary=-----------RubyMultipartPost-d69e84356ce82fce275ede76815d82d7
+      Content-Length:
+      - '2276'
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Server:
+      - nginx/1.18.0
+      Date:
+      - Wed, 16 Apr 2025 10:45:09 GMT
+      Content-Type:
+      - application/json
+      Content-Length:
+      - '631'
+      Connection:
+      - keep-alive
+      Strict-Transport-Security:
+      - max-age=31536000; includeSubDomains; preload
+      Access-Control-Allow-Origin:
+      - "*"
+      Access-Control-Allow-Methods:
+      - GET, POST, OPTIONS
+      Access-Control-Expose-Headers:
+      - Content-Length,Content-Type,Date,Server,Connection
+    body:
+      encoding: UTF-8
+      string: '{"ok":true,"result":[{"message_id":2020,"from":{"id":442304679,"is_bot":true,"first_name":"AlertBot","username":"ezhivlabot"},"chat":{"id":<TELEGRAM_CHAT_ID>,"first_name":"Volodymyr","username":"viper_ua","type":"private"},"date":1744800309,"photo":[{"file_id":"AgACAgIAAxkDAAIH5Gf_ijTigWAOo0aPrUXiGne91lFgAALZ6jEb-3kAAUh15FwzsFaezAEAAwIAA3MAAzYE","file_unique_id":"AQAD2eoxG_t5AAFIeA","file_size":623,"width":90,"height":90},{"file_id":"AgACAgIAAxkDAAIH5Gf_ijTigWAOo0aPrUXiGne91lFgAALZ6jEb-3kAAUh15FwzsFaezAEAAwIAA20AAzYE","file_unique_id":"AQAD2eoxG_t5AAFIcg","file_size":986,"width":100,"height":100}],"caption":"Hello
+        from VCR test!"}]}'
+  recorded_at: Wed, 16 Apr 2025 10:45:08 GMT
+recorded_with: VCR 6.3.1
