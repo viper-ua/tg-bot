@@ -3,6 +3,7 @@
 require 'factory_bot'
 require 'database_cleaner/active_record'
 require_relative '../lib/data_model'
+require_relative '../lib/calculation_helpers'
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
