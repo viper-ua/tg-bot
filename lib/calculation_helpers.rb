@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'pry-byebug'
-
 # Various calculations for rates analysis
 module CalculationHelpers
   NBU_LIMIT = 50_000.0

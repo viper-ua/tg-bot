@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'dotenv/load'
+require 'dotenv/load' if ENV['APP_ENV'] != 'production'
 require 'rufus-scheduler'
 
 require_relative 'lib/workflows/usd_rates_update'
