@@ -53,6 +53,16 @@ RSpec.describe CalculationHelpers do
     it 'finds ID of the rate with minimum difference between buy and sell' do
       expect(helper.min_diff_id(rates)).to eq(2)
     end
+
+    it 'looks for the minimum difference starting from the last rate' do
+      rates << create(:currency_rate, buy: 40.6, sell: 40.9, id: 4)
+
+      expect(helper.min_diff_id(rates)).to eq(4)
+    end
+
+    it 'returns nil if the list is empty' do
+      expect(helper.min_diff_id([])).to be_nil
+    end
   end
 
   describe '#min_rate_in_increments' do
