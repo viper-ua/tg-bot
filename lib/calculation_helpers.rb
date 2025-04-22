@@ -11,7 +11,8 @@ module CalculationHelpers
   def conversion_diff(rate) = (NBU_LIMIT * ((1.0 / rate.buy) - (1.0 / rate.sell))).round(2)
 
   def min_diff_id(rates)
-    return nil unless rates.is_a?(Array) && rates.size > 0
+    return @min_diff_id if defined?(@min_diff_id)
+    return nil unless rates.is_a?(Enumerable) && rates.size > 0
 
     min_id = nil
     min_val = Float::INFINITY
@@ -21,7 +22,7 @@ module CalculationHelpers
       min_id = rate.id
       min_val = rate.sell - rate.buy
     end
-    min_id
+    @min_diff_id = min_id
   end
 
   def min_rate_in_increments(rates, increment) = ((rates.min_by(&:buy)&.buy || 0) / increment).floor * increment
