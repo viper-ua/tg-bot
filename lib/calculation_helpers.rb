@@ -12,7 +12,7 @@ module CalculationHelpers
 
   def min_diff_id(rates)
     return @min_diff_id if defined?(@min_diff_id)
-    return nil unless rates.is_a?(Enumerable) && rates.size > 0
+    return nil unless rates.is_a?(Enumerable) && rates.size.positive?
 
     min_id = nil
     min_val = Float::INFINITY
