@@ -2,9 +2,9 @@
 
 require_relative '../apis/mono_api'
 require_relative '../apis/telegram_api'
-require_relative '../data_model'
 require_relative '../generators/graph_generator'
 require_relative '../generators/message_generator'
+require_relative '../models/currency_rate'
 
 # UsdRatesUpdate workflow to fetch, save and report USD rates
 # This class is responsible for fetching the USD rates from the MonoBank API,

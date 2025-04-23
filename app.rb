@@ -3,6 +3,7 @@
 require 'dotenv/load' if ENV['APP_ENV'] != 'production'
 require 'rufus-scheduler'
 
+require_relative 'lib/initializers/db'
 require_relative 'lib/workflows/usd_rates_update'
 
 def test_run = ENV['TEST_RUN'] == 'yes'

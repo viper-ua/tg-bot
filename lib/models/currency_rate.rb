@@ -1,21 +1,5 @@
 # frozen_string_literal: true
 
-require 'active_record'
-
-# Database configuration
-ActiveRecord::Base.establish_connection(
-  adapter: 'sqlite3',
-  database: "#{__dir__}/../db/development.sqlite3"
-)
-
-unless ActiveRecord::Base.connection.table_exists?(:currency_rates)
-  ActiveRecord::Migration.create_table :currency_rates do |table|
-    table.float :buy
-    table.float :sell
-    table.timestamps
-  end
-end
-
 # CurrencyRate model
 class CurrencyRate < ActiveRecord::Base
   COMPARISON_ATTRIBUTES = %i[buy sell].freeze

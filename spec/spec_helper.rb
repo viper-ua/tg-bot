@@ -5,11 +5,13 @@ require 'dotenv'
 require 'factory_bot'
 require 'vcr'
 require 'webmock/rspec'
-require_relative '../lib/apis/telegram_api'
-require_relative '../lib/data_model'
-require_relative '../lib/calculation_helpers'
 
 Dotenv.load('.env.test')
+
+require_relative '../lib/initializers/db'
+require_relative '../lib/apis/telegram_api'
+require_relative '../lib/calculation_helpers'
+require_relative '../lib/models/currency_rate'
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
