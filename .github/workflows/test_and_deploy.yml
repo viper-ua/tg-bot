@@ -1,0 +1,65 @@
+name: Deployment pipeline
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  specs:
+    name: Run RSpec and Rubocop
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libmagickwand-dev
+          sudo apt-get clean -y
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.4'
+          bundler-cache: true
+
+      - name: Run tests
+        run: bundle exec rspec
+
+      - name: Run Rubocop
+        run: bundle exec rubocop
+
+  deploy:
+    name: Deploy to home server
+    runs-on: ubuntu-latest
+    needs: specs
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.2.2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          host: ${{ secrets.SSH_REMOTE_HOST }}
+          port: ${{ secrets.SSH_REMOTE_PORT }}
+          username: ${{ secrets.SSH_REMOTE_USER }}
+          script: |
+            echo "=== Deploying to home server ==="
+            cd /home/pi/tg-bot
+            echo "Pulling latest changes from GitHub"
+            git fetch --all && git reset --hard origin/main
+            echo "Replacing Docker container with fresh built image"
+            docker compose up tg-currency-bot -d --build
