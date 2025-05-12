@@ -4,15 +4,9 @@ require_relative '../calculation_helpers'
 
 # Class responsible for message generation, with rates and some indicators
 class MessageGenerator
-  include CalculationHelpers
+  extend CalculationHelpers
 
-  def initialize(rates:)
-    @rates = rates
-  end
-
-  attr_reader :rates
-
-  def message
+  def self.message(rates:)
     <<~MESSAGE
       <b><i>#{Time.now}</i></b>
       <b>USD Buy:</b> #{rates.buy}, <b>USD Sell:</b> #{rates.sell}

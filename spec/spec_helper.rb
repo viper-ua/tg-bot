@@ -12,7 +12,7 @@ require_relative '../lib/initializers/db'
 require_relative '../lib/apis/telegram_api'
 require_relative '../lib/calculation_helpers'
 require_relative '../lib/models/currency_rate'
-
+require_relative '../lib/generators/message_generator'
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
