@@ -43,7 +43,7 @@ class UsdRatesUpdate
                     .then { |g| IMAGE_SET.map { |name| g.public_send(name) } }
     end
 
-    def message = MessageGenerator.new(rates: fetched_rates).message
+    def message = MessageGenerator.message(rates: fetched_rates)
     def time_to_report? = (Time.now.hour == REPORTING_HOUR) && CurrencyRate.no_rates_for_today
 
     def same_rates?
