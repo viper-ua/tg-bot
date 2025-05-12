@@ -10,3 +10,5 @@ Dockerfile
 .rubocop.yml
 fixtures
 db
+spec/
+.DS_Store
