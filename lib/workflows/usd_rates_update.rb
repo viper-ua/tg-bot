@@ -44,7 +44,7 @@ class UsdRatesUpdate
     end
 
     def message = MessageGenerator.message(rates: fetched_rates)
-    def time_to_report? = (Time.now.hour == REPORTING_HOUR) && CurrencyRate.no_rates_for_today
+    def time_to_report? = (Time.now.hour >= REPORTING_HOUR) && CurrencyRate.no_rates_for_today
 
     def same_rates?
       previous_rates = CurrencyRate.last_known_rate

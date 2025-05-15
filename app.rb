@@ -16,7 +16,7 @@ end
 
 # Notify and store rates every 5 minutes
 Rufus::Scheduler.new.tap do |scheduler|
-  scheduler.cron '*/1 * * * *' do
+  scheduler.cron '*/2 * * * *' do
     UsdRatesUpdate.run(logger:, test_run:)
   end
 
