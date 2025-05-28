@@ -41,7 +41,7 @@ class TelegramApi
   # @return [void]
   def send_message(text:, chat_id: default_chat_id)
     Telegram::Bot::Client.run(bot_token) do |bot|
-      bot.api.send_message({ chat_id:, text: })
+      bot.api.send_message({ chat_id:, text:, parse_mode: 'HTML' })
     end
   end
 
