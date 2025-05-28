@@ -11,5 +11,6 @@ services:
       - TZ
       - TELEGRAM_TOKEN
       - TELEGRAM_CHAT_ID
+      - MONO_API_TOKEN
       - TEST_RUN
       - APP_ENV=production

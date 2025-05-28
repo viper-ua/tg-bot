@@ -2,7 +2,7 @@
 
 require 'faraday'
 
-# MonoBank API to fetch currency rates
+# MonoBank API to fetch currency rates and account information
 class MonoApi
   API_URLS = {
     currency: 'https://api.monobank.ua/bank/currency',
@@ -32,10 +32,39 @@ class MonoApi
       { buy: usd_rate['rateBuy'], sell: usd_rate['rateSell'] }
     end
 
+    # Fetch account balances from Monobank API
+    def fetch_balances(test_run: false)
+      return random_balances if test_run
+
+      response = Faraday.get(API_URLS[:client_info]) do |req|
+        req.headers['X-Token'] = ENV.fetch('MONO_API_TOKEN')
+      end
+      data = JSON.parse(response.body)
+
+      raise data['errText'].to_s if data.is_a?(Hash)
+
+      data['accounts']
+    end
+
     private
 
     def random_rates
       { buy: rand(40.0..41.0).round(4), sell: rand(41.0..42.0).round(4) }
+    end
+
+    def random_balances
+      [
+        {
+          'title' => 'Main Account',
+          'balance' => rand(100_000..1_000_000),
+          'creditLimit' => 0
+        },
+        {
+          'title' => 'Credit Card',
+          'balance' => rand(-50_000..50_000),
+          'creditLimit' => 100_000
+        }
+      ]
     end
   end
 end
