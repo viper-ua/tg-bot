@@ -17,12 +17,14 @@ gem 'dotenv', groups: %i[development test]
 group :development do
   gem 'pry-byebug'
   gem 'rubocop'
+  gem 'rubycritic'
 end
 
 group :test do
   gem 'database_cleaner-active_record'
   gem 'factory_bot'
   gem 'rspec'
+  gem 'timecop'
   gem 'vcr'
   gem 'webmock'
 end

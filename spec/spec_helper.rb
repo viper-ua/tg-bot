@@ -5,6 +5,7 @@ require 'dotenv'
 require 'factory_bot'
 require 'vcr'
 require 'webmock/rspec'
+require 'timecop'
 
 Dotenv.load('.env.test')
 
@@ -13,6 +14,8 @@ require_relative '../lib/apis/telegram_api'
 require_relative '../lib/calculation_helpers'
 require_relative '../lib/models/currency_rate'
 require_relative '../lib/generators/message_generator'
+require_relative '../lib/workflows/usd_rates_update'
+
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
 
