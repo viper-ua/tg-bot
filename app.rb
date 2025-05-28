@@ -22,7 +22,7 @@ Rufus::Scheduler.new.tap do |scheduler|
   end
 
   # Check balances every day at 9:00 AM
-  scheduler.cron '*/5 * * * *' do
+  scheduler.cron '0 9-20 * * *' do
     BalanceCheck.run(logger:, test_run:)
   end
 
