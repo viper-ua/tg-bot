@@ -13,7 +13,7 @@ class TelegramApi
   attr_reader :bot_token
   private :bot_token
 
-  def send_message(images:, message:, chat_id: ENV.fetch('TELEGRAM_CHAT_ID', nil))
+  def send_message(message:, images: [], chat_id: ENV.fetch('TELEGRAM_CHAT_ID', nil))
     Telegram::Bot::Client.run(bot_token) do |bot|
       bot.api.send_media_group(
         { chat_id: }.merge(compose_media_group(images:, message:))
