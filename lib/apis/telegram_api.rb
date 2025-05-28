@@ -5,6 +5,7 @@ require 'telegram/bot'
 # Class implementing different Telegram API endpoints
 class TelegramApi
   def self.send_message(...) = new.send_message(...)
+  def self.send_media_message(...) = new.send_media_message(...)
 
   def initialize(bot_token: ENV.fetch('TELEGRAM_TOKEN', nil))
     @bot_token = bot_token
@@ -13,7 +14,7 @@ class TelegramApi
   attr_reader :bot_token
   private :bot_token
 
-  def send_message(message:, images: [], chat_id: ENV.fetch('TELEGRAM_CHAT_ID', nil))
+  def send_media_message(message:, images:, chat_id: default_chat_id)
     Telegram::Bot::Client.run(bot_token) do |bot|
       bot.api.send_media_group(
         { chat_id: }.merge(compose_media_group(images:, message:))
@@ -21,7 +22,17 @@ class TelegramApi
     end
   end
 
+  def send_message(text:, chat_id: default_chat_id)
+    Telegram::Bot::Client.run(bot_token) do |bot|
+      bot.api.send_message({ chat_id:, text: })
+    end
+  end
+
   private
+
+  def default_chat_id
+    ENV.fetch('TELEGRAM_CHAT_ID', nil)
+  end
 
   def compose_media_group(images:, message:)
     empty_group = { media: [] }

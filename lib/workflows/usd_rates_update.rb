@@ -29,7 +29,7 @@ class UsdRatesUpdate
       return if !test_run && !time_to_report? && same_rates?
 
       fetched_rates.save! unless test_run
-      TelegramApi.send_message(images:, message:)
+      TelegramApi.send_media_message(images:, message:)
     rescue StandardError => e
       logger.error("#{e.class} - #{e.message}\n#{e.backtrace.join("\n")}")
     end

@@ -24,7 +24,7 @@ class BalanceCheck
       logger.info({ balances:, test_run: })
       return if !test_run && !time_to_report?
 
-      TelegramApi.send_message(message:)
+      TelegramApi.send_message(text:)
     rescue StandardError => e
       logger.error("#{e.class} - #{e.message}\n#{e.backtrace.join("\n")}")
     end
@@ -33,7 +33,7 @@ class BalanceCheck
 
     private
 
-    def message = BalanceMessageGenerator.message(balances:)
+    def text = BalanceMessageGenerator.message(balances:)
     def time_to_report? = Time.now.hour >= REPORTING_HOUR
   end
 end

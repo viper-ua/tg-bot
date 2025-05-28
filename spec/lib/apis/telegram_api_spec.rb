@@ -10,17 +10,31 @@ RSpec.describe TelegramApi do
   let(:images) { [File.expand_path('../../fixtures/test_image.png', __dir__)] }
   let(:message) { 'Hello from VCR test!' }
 
+  describe '.send_media_message' do
+    it 'delegates to an instance method' do
+      expect_any_instance_of(described_class).to receive(:send_media_message)
+      described_class.send_media_message(images:, message:, chat_id:)
+    end
+  end
+
+  describe '#send_media_message', :vcr do
+    it 'successfully sends a media group message to Telegram' do
+      response = telegram_api.send_media_message(images:, message:, chat_id:)
+      expect(response).to match_array([Telegram::Bot::Types::Message])
+    end
+  end
+
   describe '.send_message' do
     it 'delegates to an instance method' do
       expect_any_instance_of(described_class).to receive(:send_message)
-      described_class.send_message(images:, message:, chat_id:)
+      described_class.send_message(text: message, chat_id:)
     end
   end
 
   describe '#send_message', :vcr do
-    it 'successfully sends a media group message to Telegram' do
-      response = telegram_api.send_message(images:, message:, chat_id:)
-      expect(response).to match_array([Telegram::Bot::Types::Message])
+    it 'successfully sends a text message to Telegram' do
+      response = telegram_api.send_message(text: message, chat_id:)
+      expect(response).to match(Telegram::Bot::Types::Message)
     end
   end
 
