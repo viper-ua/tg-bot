@@ -109,9 +109,11 @@ RSpec.describe UsdRatesUpdate do
 
     context 'when an error occurs during execution' do
       let(:error) { StandardError.new('Something went wrong') }
+      let(:mocked_mono_api) { instance_double(Apis::MonoApi) }
 
       before do
-        allow(MonoApi).to receive(:fetch_rates).and_raise(error)
+        allow(Apis::MonoApi).to receive(:new).and_return(mocked_mono_api)
+        allow(mocked_mono_api).to receive(:fetch_rates).and_raise(error)
         allow(error).to receive(:backtrace).and_return(['line 1', 'line 2'])
       end
 

@@ -24,7 +24,7 @@ class UsdRatesUpdate
 
   class << self
     def run(logger:, test_run:)
-      @fetched_rates = CurrencyRate.build(MonoApi.fetch_rates(test_run:))
+      @fetched_rates = CurrencyRate.build(mono_client(test_run:).fetch_rates)
       logger.info({ **fetched_rates.attributes.compact, test_run: })
       return if !test_run && !time_to_report? && same_rates?
 
@@ -43,6 +43,7 @@ class UsdRatesUpdate
                     .then { |g| IMAGE_SET.map { |name| g.public_send(name) } }
     end
 
+    def mono_client(...) = Apis::MonoApi.new(...)
     def message = MessageGenerator.message(rates: fetched_rates)
     def time_to_report? = (Time.now.hour >= REPORTING_HOUR) && !CurrencyRate.rates_for_today?
 

@@ -20,7 +20,7 @@ class BalanceCheck
 
   class << self
     def run(logger:, test_run:)
-      @balances = MonoApi.fetch_balances(test_run:)
+      @balances = mono_client(test_run:).fetch_balances
       logger.info({ balances:, test_run: })
       return if !test_run && !time_to_report?
 
@@ -33,6 +33,7 @@ class BalanceCheck
 
     private
 
+    def mono_client(**args) = Apis::MonoApi.new(api_token: ENV.fetch('MONO_API_TOKEN'), **args)
     def text = BalanceMessageGenerator.message(balances:)
     def time_to_report? = Time.now.hour >= REPORTING_HOUR
   end
