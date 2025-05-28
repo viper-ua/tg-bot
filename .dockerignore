@@ -13,3 +13,4 @@ fixtures
 db
 spec/
 .DS_Store
+tmp/

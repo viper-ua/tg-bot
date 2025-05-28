@@ -1,4 +1,4 @@
-db
+db/
 rates.png
 ratios.png
 diff.png
@@ -7,3 +7,4 @@ app.log
 Gemfile.lock
 .ruby-lsp
 .DS_Store
+tmp/
