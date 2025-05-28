@@ -17,20 +17,20 @@ RSpec.describe CurrencyRate do
     end
   end
 
-  describe '.no_rates_for_today' do
+  describe '.rates_for_today?' do
     context 'when there are records created today' do
-      it 'returns false' do
+      it 'returns true' do
         create(:currency_rate, created_at: Time.now)
 
-        expect(CurrencyRate.no_rates_for_today).to be false
+        expect(CurrencyRate.rates_for_today?).to be true
       end
     end
 
     context 'when last record is not from today' do
-      it 'returns true' do
+      it 'returns false' do
         create(:currency_rate, created_at: 1.day.ago)
 
-        expect(CurrencyRate.no_rates_for_today).to be true
+        expect(CurrencyRate.rates_for_today?).to be false
       end
     end
   end

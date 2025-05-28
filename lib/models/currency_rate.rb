@@ -7,7 +7,7 @@ class CurrencyRate < ActiveRecord::Base
 
   class << self
     def last_known_rate = order(created_at: :desc).take
-    def no_rates_for_today = Time.now.day != last_known_rate.created_at.day
+    def rates_for_today? = exists?(created_at: Date.today.all_day)
 
     def last_rates(max_records = MAX_HISTORICAL_RECORDS)
       from(order(created_at: :desc).limit(max_records), :currency_rates).order(:created_at)
