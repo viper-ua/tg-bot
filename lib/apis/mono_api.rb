@@ -22,7 +22,7 @@ class MonoApi
       response = Faraday.get(API_URLS[:currency])
       data = JSON.parse(response.body)
 
-      raise data['errText'].to_s if data.is_a?(Hash)
+      raise_if_error(data:, key: 'errText')
 
       usd_rate = data.find do |rate|
         rate['currencyCodeA'] == CURRENCY_CODES[:usd] &&
@@ -41,7 +41,7 @@ class MonoApi
       end
       data = JSON.parse(response.body)
 
-      raise data['errText'].to_s if data.is_a?(Hash)
+      raise_if_error(data:, key: 'errorDescription')
 
       data['accounts']
     end
@@ -65,6 +65,10 @@ class MonoApi
           'creditLimit' => 100_000
         }
       ]
+    end
+
+    def raise_if_error(data:, key:)
+      raise data[key].to_s if data.is_a?(Hash) && data[key]
     end
   end
 end
