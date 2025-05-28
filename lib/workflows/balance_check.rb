@@ -16,13 +16,10 @@ require_relative '../generators/balance_message_generator'
 #
 # @return [void]
 class BalanceCheck
-  REPORTING_HOUR = 9
-
   class << self
     def run(logger:, test_run:)
       @balances = mono_client(test_run:).fetch_balances
       logger.info({ balances:, test_run: })
-      return if !test_run && !time_to_report?
 
       TelegramApi.send_message(text:)
     rescue StandardError => e
@@ -34,7 +31,6 @@ class BalanceCheck
     private
 
     def mono_client(**args) = Apis::MonoApi.new(api_token: ENV.fetch('MONO_API_TOKEN'), **args)
-    def text = BalanceMessageGenerator.message(balances:)
-    def time_to_report? = Time.now.hour >= REPORTING_HOUR
+    def text = BalanceMessageGenerator.new.message(balances:)
   end
 end
