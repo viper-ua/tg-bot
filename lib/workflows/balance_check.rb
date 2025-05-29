@@ -16,21 +16,26 @@ require_relative '../generators/balance_message_generator'
 #
 # @return [void]
 class BalanceCheck
-  class << self
-    def run(logger:, test_run:)
-      @balances = mono_client(test_run:).fetch_balances
-      logger.info({ balances:, test_run: })
+  def self.run(...) = new(...).run
 
-      TelegramApi.send_message(text:)
-    rescue StandardError => e
-      logger.error("#{e.class} - #{e.message}\n#{e.backtrace.join("\n")}")
-    end
-
-    attr_reader :balances
-
-    private
-
-    def mono_client(**args) = Apis::MonoApi.new(api_token: ENV.fetch('MONO_API_TOKEN'), **args)
-    def text = BalanceMessageGenerator.new.message(balances:)
+  def initialize(logger:, test_run:)
+    @logger = logger
+    @test_run = test_run
+    @mono_client = Apis::MonoApi.new(api_token: ENV.fetch('MONO_API_TOKEN'), test_run:)
   end
+
+  def run
+    @balances = mono_client(test_run:).fetch_balances
+    logger.info({ balances:, test_run: })
+
+    TelegramApi.send_message(text:)
+  rescue StandardError => e
+    logger.error("#{e.class} - #{e.message}\n#{e.backtrace.join("\n")}")
+  end
+
+  attr_reader :balances, :mono_client, :test_run
+
+  private
+
+  def text = BalanceMessageGenerator.new.message(balances:)
 end
