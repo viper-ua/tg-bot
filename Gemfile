@@ -18,6 +18,8 @@ gem 'dotenv', groups: %i[development test]
 group :development do
   gem 'pry-byebug'
   gem 'rubocop'
+  gem 'rubocop-factory_bot'
+  gem 'rubocop-rspec'
   gem 'rubycritic'
 end
 

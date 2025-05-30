@@ -20,7 +20,7 @@ RSpec.describe Apis::TelegramApi do
   describe '#send_media_message', :vcr do
     it 'successfully sends a media group message to Telegram' do
       response = telegram_api.send_media_message(images:, message:, chat_id:)
-      expect(response).to match_array([Telegram::Bot::Types::Message])
+      expect(response).to contain_exactly(Telegram::Bot::Types::Message)
     end
   end
 

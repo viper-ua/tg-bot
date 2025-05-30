@@ -1,3 +1,9 @@
+inherit_from: .rubocop_todo.yml
+
+plugins:
+  - rubocop-factory_bot
+  - rubocop-rspec
+
 AllCops:
   NewCops: enable
 

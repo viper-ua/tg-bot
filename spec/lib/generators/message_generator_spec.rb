@@ -3,9 +3,9 @@
 require 'spec_helper'
 
 RSpec.describe Generators::MessageGenerator do
-  let(:rates) { create(:currency_rate, buy: 40.5, sell: 41.0, id: 1) }
-
   subject(:message) { described_class.message(rates:) }
+
+  let(:rates) { create(:currency_rate, buy: 40.5, sell: 41.0, id: 1) }
 
   describe '#message' do
     it { is_expected.to include('<b>USD Buy:</b> 40.5, <b>USD Sell:</b> 41.0') }

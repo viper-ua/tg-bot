@@ -4,6 +4,8 @@ require 'spec_helper'
 
 RSpec.describe Workflows::UsdRatesUpdate do
   describe '.run', :aggregate_failures do
+    subject(:run_workflow) { described_class.run(logger:, test_run:) }
+
     let(:logger) { instance_double(Logger, info: nil, error: nil) }
     let(:test_run) { false }
     let(:mock_message) { 'Generated message' }
@@ -11,8 +13,6 @@ RSpec.describe Workflows::UsdRatesUpdate do
     before do
       allow(Apis::TelegramApi).to receive(:send_media_message).and_call_original
     end
-
-    subject(:run_workflow) { described_class.run(logger:, test_run:) }
 
     RSpec::Matchers.define :be_a_valid_currency_message do
       match do |message|
