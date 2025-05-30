@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe BalanceCheck do
+RSpec.describe Workflows::BalanceCheck do
   let(:logger) { instance_double(Logger, info: nil, error: nil) }
   let(:test_run) { false }
 
@@ -12,7 +12,7 @@ RSpec.describe BalanceCheck do
     context 'when successful', :vcr do
       it 'fetches balances and sends message' do
         expect(logger).to receive(:info).with(hash_including(:balances, :test_run))
-        expect(TelegramApi).to receive(:send_message).with(hash_including(:text))
+        expect(Apis::TelegramApi).to receive(:send_message).with(hash_including(:text))
 
         run_balance_check
       end
@@ -30,7 +30,7 @@ RSpec.describe BalanceCheck do
 
       it 'logs the error and does not send message' do
         expect(logger).to receive(:error).with(/StandardError - API Error/)
-        expect(TelegramApi).not_to receive(:send_message)
+        expect(Apis::TelegramApi).not_to receive(:send_message)
 
         run_balance_check
       end
@@ -43,7 +43,7 @@ RSpec.describe BalanceCheck do
         expect(Apis::MonoApi).to receive(:new)
           .with(hash_including(test_run: true)).and_call_original
         expect(logger).to receive(:info).with(hash_including(test_run: true))
-        expect(TelegramApi).to receive(:send_message).with(hash_including(:text))
+        expect(Apis::TelegramApi).to receive(:send_message).with(hash_including(:text))
 
         run_balance_check
       end
@@ -56,7 +56,7 @@ RSpec.describe BalanceCheck do
     context 'when successful', :vcr do
       it 'sets balances instance variable' do
         expect(logger).to receive(:info).with(hash_including(:balances, :test_run))
-        expect(TelegramApi).to receive(:send_message).with(hash_including(:text))
+        expect(Apis::TelegramApi).to receive(:send_message).with(hash_including(:text))
 
         run_instance
       end

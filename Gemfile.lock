@@ -276,6 +276,7 @@ DEPENDENCIES
   timecop
   vcr
   webmock
+  zeitwerk
 
 BUNDLED WITH
    2.5.11

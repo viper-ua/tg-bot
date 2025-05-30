@@ -2,14 +2,14 @@
 
 require 'spec_helper'
 
-RSpec.describe UsdRatesUpdate do
+RSpec.describe Workflows::UsdRatesUpdate do
   describe '.run', :aggregate_failures do
     let(:logger) { instance_double(Logger, info: nil, error: nil) }
     let(:test_run) { false }
     let(:mock_message) { 'Generated message' }
 
     before do
-      allow(TelegramApi).to receive(:send_media_message).and_call_original
+      allow(Apis::TelegramApi).to receive(:send_media_message).and_call_original
     end
 
     subject(:run_workflow) { described_class.run(logger:, test_run:) }
@@ -39,12 +39,13 @@ RSpec.describe UsdRatesUpdate do
       end
 
       it 'fetches rates, builds rate object, saves it, and sends a message', :vcr do
-        expect(logger).to receive(:info).with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
+        expect(logger).to receive(:info)
+          .with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
 
         expect { run_workflow }.to change(CurrencyRate, :count).by(1)
 
-        expect(TelegramApi).to have_received(:send_media_message).with(images: %w[rates.png ratios.png diff.png],
-                                                                       message: be_a_valid_currency_message)
+        expect(Apis::TelegramApi).to have_received(:send_media_message)
+          .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
       end
     end
 
@@ -62,8 +63,8 @@ RSpec.describe UsdRatesUpdate do
 
         expect { run_workflow }.to change(CurrencyRate, :count).by(1)
 
-        expect(TelegramApi).to have_received(:send_media_message).with(images: %w[rates.png ratios.png diff.png],
-                                                                       message: be_a_valid_currency_message)
+        expect(Apis::TelegramApi).to have_received(:send_media_message)
+          .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
       end
     end
 
@@ -81,7 +82,7 @@ RSpec.describe UsdRatesUpdate do
         expect(logger).to receive(:info).with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
 
         expect { run_workflow }.not_to change(CurrencyRate, :count)
-        expect(TelegramApi).not_to have_received(:send_media_message)
+        expect(Apis::TelegramApi).not_to have_received(:send_media_message)
       end
     end
 
@@ -102,8 +103,8 @@ RSpec.describe UsdRatesUpdate do
 
         expect { run_workflow }.not_to change(CurrencyRate, :count)
 
-        expect(TelegramApi).to have_received(:send_media_message).with(images: %w[rates.png ratios.png diff.png],
-                                                                       message: be_a_valid_currency_message)
+        expect(Apis::TelegramApi).to have_received(:send_media_message)
+          .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
       end
     end
 
@@ -124,7 +125,7 @@ RSpec.describe UsdRatesUpdate do
 
       it 'does not attempt to save or send message' do
         expect { run_workflow }.not_to change(CurrencyRate, :count)
-        expect(TelegramApi).not_to have_received(:send_media_message)
+        expect(Apis::TelegramApi).not_to have_received(:send_media_message)
       end
     end
   end

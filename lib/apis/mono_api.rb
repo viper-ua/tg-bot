@@ -1,11 +1,8 @@
 # frozen_string_literal: true
 
 require 'faraday'
-require_relative 'mono_api_error'
 
 module Apis
-  class MonoApiError < StandardError; end
-
   # MonoBank API client for fetching currency rates and account information
   class MonoApi
     API_URLS = {
@@ -30,7 +27,7 @@ module Apis
 
     # Fetch current USD/UAH exchange rates
     # @return [Hash] Hash containing buy and sell rates
-    # @raise [MonoApiError] If the API request fails
+    # @raise [MonoApi::Error] If the API request fails
     def fetch_rates
       return random_rates if @test_run
 
@@ -45,7 +42,7 @@ module Apis
 
     # Fetch account balances from Monobank
     # @return [Array<Hash>] Array of account information
-    # @raise [MonoApiError] If the API request fails
+    # @raise [MonoApi::Error] If the API request fails
     def fetch_balances
       return random_balances if @test_run
 
@@ -96,13 +93,13 @@ module Apis
     def classify_error(message)
       case message
       when /token/i
-        MonoApiAuthenticationError
+        MonoApi::AuthenticationError
       when /too many requests/i
-        MonoApiRateLimitError
+        MonoApi::RateLimitError
       when /invalid/i
-        MonoApiValidationError
+        MonoApi::ValidationError
       else
-        MonoApiServerError
+        MonoApi::ServerError
       end
     end
   end

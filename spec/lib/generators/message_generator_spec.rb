@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe MessageGenerator do
+RSpec.describe Generators::MessageGenerator do
   let(:rates) { create(:currency_rate, buy: 40.5, sell: 41.0, id: 1) }
 
   subject(:message) { described_class.message(rates:) }

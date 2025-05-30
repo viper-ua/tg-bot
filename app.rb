@@ -1,15 +1,11 @@
 # frozen_string_literal: true
 
 require 'dotenv/load' if ENV['APP_ENV'] != 'production'
+require 'logger'
 require 'rufus-scheduler'
 
 require_relative 'lib/initializers/db'
-require_relative 'lib/workflows/usd_rates_update'
-require_relative 'lib/workflows/balance_check'
-require_relative 'lib/apis/mono_api'
-require_relative 'lib/apis/telegram_api'
-require_relative 'lib/generators/balance_message_generator'
-require_relative 'lib/generators/message_generator'
+require_relative 'lib/initializers/zeitwerk'
 
 def test_run = ENV['TEST_RUN'] == 'yes'
 

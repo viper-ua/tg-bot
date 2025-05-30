@@ -2,7 +2,7 @@
 
 require 'spec_helper'
 
-RSpec.describe TelegramApi do
+RSpec.describe Apis::TelegramApi do
   subject(:telegram_api) { described_class.new(bot_token:) }
 
   let(:bot_token) { ENV.fetch('TELEGRAM_TOKEN') }

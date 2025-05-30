@@ -10,6 +10,7 @@ group :production do
   gem 'rufus-scheduler'
   gem 'sqlite3', '~> 2.0'
   gem 'telegram-bot-ruby'
+  gem 'zeitwerk'
 end
 
 gem 'dotenv', groups: %i[development test]
