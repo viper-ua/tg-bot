@@ -8,7 +8,7 @@ group :production do
   gem 'gruff'
   gem 'rake'
   gem 'rufus-scheduler'
-  gem 'sqlite3', '~> 1.4'
+  gem 'sqlite3', '~> 2.0'
   gem 'telegram-bot-ruby'
 end
 
