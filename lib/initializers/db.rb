@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'active_record'
+require 'fileutils'
 
 # Database configuration
 
@@ -12,7 +13,7 @@ ActiveRecord::Base.establish_connection(
 
 # Create the currency_rates table if it doesn't exist
 # Using Active Record migrations is overkill in this simple case
-unless ActiveRecord::Base.connection.table_exists?(:currency_rates)
+unless ActiveRecord::Base.lease_connection.table_exists?(:currency_rates)
   ActiveRecord::Migration.create_table :currency_rates do |table|
     table.float :buy
     table.float :sell
