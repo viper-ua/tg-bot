@@ -73,12 +73,12 @@ module Apis
     def random_balances
       [
         {
-          'title' => 'Main Account',
+          'type' => 'Main Account',
           'balance' => rand(100_000..1_000_000),
           'creditLimit' => 0
         },
         {
-          'title' => 'Credit Card',
+          'type' => 'Credit Card',
           'balance' => rand(-50_000..50_000),
           'creditLimit' => 100_000
         }

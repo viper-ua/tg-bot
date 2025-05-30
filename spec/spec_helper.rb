@@ -15,6 +15,7 @@ require_relative '../lib/calculation_helpers'
 require_relative '../lib/models/currency_rate'
 require_relative '../lib/generators/message_generator'
 require_relative '../lib/workflows/usd_rates_update'
+require_relative '../lib/workflows/balance_check'
 
 RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
@@ -40,4 +41,5 @@ VCR.configure do |c|
   # Filter sensitive data
   c.filter_sensitive_data('<TELEGRAM_TOKEN>') { ENV.fetch('TELEGRAM_TOKEN', nil) }
   c.filter_sensitive_data('<TELEGRAM_CHAT_ID>') { ENV.fetch('TELEGRAM_CHAT_ID', nil) }
+  c.filter_sensitive_data('<MONO_API_TOKEN>') { ENV.fetch('MONO_API_TOKEN', nil) }
 end

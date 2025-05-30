@@ -25,8 +25,8 @@ Rufus::Scheduler.new.tap do |scheduler|
     UsdRatesUpdate.run(logger:, test_run:)
   end
 
-  # Check balances every day at 9:00 AM
-  scheduler.cron '0 9-20 * * *' do
+  # Check balances every day every 2 hours in 9:00 AM - 20:00 PM
+  scheduler.cron '0 9-20/2 * * *' do
     BalanceCheck.run(logger:, test_run:)
   end
 

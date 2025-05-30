@@ -1,0 +1,42 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.monobank.ua/personal/client-info
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      X-Token:
+      - "<MONO_API_TOKEN>"
+      User-Agent:
+      - Faraday v2.10.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Date:
+      - Fri, 30 May 2025 09:04:34 GMT
+      Content-Type:
+      - application/json; charset=utf-8
+      Content-Length:
+      - '1348'
+      Connection:
+      - keep-alive
+      Server:
+      - n/a
+      Access-Control-Allow-Origin:
+      - "*"
+      Trace-Id:
+      - c21a0b54e2b3cedeaefe854d3917a913
+    body:
+      encoding: ASCII-8BIT
+      string: !binary |-
+        eyJjbGllbnRJZCI6IjRGbkpVa21UMWUiLCJuYW1lIjoi0JrQvtCy0YLRg9C9INCQ0L3QvdCwIiwid2ViSG9va1VybCI6IiIsInBlcm1pc3Npb25zIjoicHNmaiIsImFjY291bnRzIjpbeyJpZCI6IkpPZEV2T0VzdGRwQUZZOXlJOVNpdGciLCJzZW5kSWQiOiI0Rm5KVWttVDFlIiwiY3VycmVuY3lDb2RlIjo5ODAsImNhc2hiYWNrVHlwZSI6IlVBSCIsImJhbGFuY2UiOjEwNTE2MzMzLCJjcmVkaXRMaW1pdCI6MTUwMDAwMDAsIm1hc2tlZFBhbiI6WyI0NDQxMTEqKioqKio1MzcwIl0sInR5cGUiOiJibGFjayIsImliYW4iOiJVQTAyMzIyMDAxMDAwMDAyNjIwOTMwNjA0OTk2OSJ9LHsiaWQiOiJBVG5NbllHa0NacGhVaktsZHNJaFp3Iiwic2VuZElkIjoiNmlkZjR6b0E3eiIsImN1cnJlbmN5Q29kZSI6OTgwLCJjYXNoYmFja1R5cGUiOiJVQUgiLCJiYWxhbmNlIjo4NjExLCJjcmVkaXRMaW1pdCI6MCwibWFza2VkUGFuIjpbIjQ0NDExMSoqKioqKjEzMjgiXSwidHlwZSI6IndoaXRlIiwiaWJhbiI6IlVBNDAzMjIwMDEwMDAwMDI2MjAzMzQ5NDQ2OTAxIn0seyJpZCI6IlZqWkY3eTNKMFdDZEJPZTR2bUp5cmciLCJzZW5kSWQiOiIiLCJjdXJyZW5jeUNvZGUiOjk4MCwiY2FzaGJhY2tUeXBlIjoiVUFIIiwiYmFsYW5jZSI6NjAsImNyZWRpdExpbWl0IjowLCJtYXNrZWRQYW4iOlsiNDQ0MTExKioqKioqNjYxOCJdLCJ0eXBlIjoieWVsbG93IiwiaWJhbiI6IlVBMDUzMjIwMDEwMDAwMDI2MjA5MzE0MDgzNzQ2In0seyJpZCI6IklEUlh3eC1mb0RiVHJ0d3pXQ0FLSHciLCJzZW5kSWQiOiIiLCJjdXJyZW5jeUNvZGUiOjk4MCwiY2FzaGJhY2tUeXBlIjoiVUFIIiwiYmFsYW5jZSI6NzIwLCJjcmVkaXRMaW1pdCI6MCwibWFza2VkUGFuIjpbIjQ0NDExMSoqKioqKjIyMTIiXSwidHlwZSI6ImVBaWQiLCJpYmFuIjoiVUEwOTMyMjAwMTAwMDAwMjYyMDgzMTkzMTQyMzkifV0sImphcnMiOlt7ImlkIjoiRGlmdk9MN2pJMEozaE5xY2VpbW9sS002MEZzcWJ4ZyIsInNlbmRJZCI6Imphci83YTlFN0toN29uIiwidGl0bGUiOiLQn9C+0YLRgNC10LHQuCDRgdGC0LDQsdC/0YPQvdC60YLRgyIsImRlc2NyaXB0aW9uIjoi0JfQsdC40YDQsNGU0LzQviDQvdCwINCz0YPQvNC+0LLRliDQutCw0L/RhtGWINC00LvRjyDRgdGC0LDQsdGW0LvRltC30LDRhtGW0LnQvdC+0LPQviDQv9GD0L3QutGC0YNcbtCX0L3QsNC50YjQu9C4INCx0Y7QtNC20LXRgtC90LjQuSDQstCw0YDRltCw0L3RgiDQt9CwICA5NSDQs9GA0L0sINC/0L7RgtGA0ZbQsdC90L4g0LfQsNC60YPQv9C40YLQuCDRhdC+0YfQsCDQsSAzMNGI0YIuICIsImN1cnJlbmN5Q29kZSI6OTgwLCJiYWxhbmNlIjoxMDAsImdvYWwiOjIxMDAwMH1dfQ==
+  recorded_at: Fri, 30 May 2025 09:04:34 GMT
+recorded_with: VCR 6.3.1

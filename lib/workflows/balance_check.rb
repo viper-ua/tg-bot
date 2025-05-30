@@ -25,7 +25,7 @@ class BalanceCheck
   end
 
   def run
-    @balances = mono_client(test_run:).fetch_balances
+    @balances = mono_client.fetch_balances
     logger.info({ balances:, test_run: })
 
     TelegramApi.send_message(text:)
@@ -33,7 +33,7 @@ class BalanceCheck
     logger.error("#{e.class} - #{e.message}\n#{e.backtrace.join("\n")}")
   end
 
-  attr_reader :balances, :mono_client, :test_run
+  attr_reader :balances, :logger, :mono_client, :test_run
 
   private
 
