@@ -18,12 +18,12 @@ end
 # Notify and store rates every 5 minutes
 Rufus::Scheduler.new.tap do |scheduler|
   scheduler.cron '*/2 * * * *' do
-    UsdRatesUpdate.run(logger:, test_run:)
+    Workflows::UsdRatesUpdate.run(logger:, test_run:)
   end
 
   # Check balances every day every 2 hours in 9:00 - 20:00
   scheduler.cron '0 8-20/2 * * *' do
-    BalanceCheck.run(logger:, test_run:)
+    Workflows::BalanceCheck.run(logger:, test_run:)
   end
 
   scheduler.join # Keep the scheduler running
