@@ -34,13 +34,13 @@ module Workflows
       private
 
       def images
-        Generators::GraphGenerator
+        Generators::Graph
           .new(rates: CurrencyRate.last_rates)
           .then { |g| IMAGE_SET.map { |name| g.public_send(name) } }
       end
 
       def mono_client(...) = Apis::MonoApi.new(...)
-      def message = Generators::MessageGenerator.message(rates: fetched_rates)
+      def message = Generators::RatesMessage.message(rates: fetched_rates)
       def time_to_report? = (Time.now.hour >= REPORTING_HOUR) && !CurrencyRate.rates_for_today?
 
       def same_rates?

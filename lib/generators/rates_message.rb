@@ -2,7 +2,7 @@
 
 module Generators
   # Class responsible for message generation, with rates and some indicators
-  class MessageGenerator
+  class RatesMessage
     extend CalculationHelpers
 
     def self.message(rates:)

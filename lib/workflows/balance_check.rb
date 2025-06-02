@@ -34,6 +34,6 @@ module Workflows
 
     private
 
-    def text = Generators::BalanceMessageGenerator.new.message(balances:)
+    def text = Generators::BalanceMessage.new.message(balances:)
   end
 end

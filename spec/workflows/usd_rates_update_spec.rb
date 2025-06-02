@@ -8,7 +8,6 @@ RSpec.describe Workflows::UsdRatesUpdate do
 
     let(:logger) { instance_double(Logger, info: nil, error: nil) }
     let(:test_run) { false }
-    let(:mock_message) { 'Generated message' }
 
     before do
       allow(Apis::TelegramApi).to receive(:send_media_message).and_call_original
@@ -98,7 +97,7 @@ RSpec.describe Workflows::UsdRatesUpdate do
         Timecop.return
       end
 
-      it 'returns random rates, builds rate object, but does not save or send message' do
+      it 'returns random rates, builds rate object, but does not save it, and sends message' do
         expect(logger).to receive(:info).with(hash_including(test_run: true))
 
         expect { run_workflow }.not_to change(CurrencyRate, :count)

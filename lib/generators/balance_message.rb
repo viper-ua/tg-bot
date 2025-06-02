@@ -2,7 +2,7 @@
 
 module Generators
   # Class responsible for generating balance report messages
-  class BalanceMessageGenerator
+  class BalanceMessage
     def message(balances:)
       <<~MESSAGE
         #{header}

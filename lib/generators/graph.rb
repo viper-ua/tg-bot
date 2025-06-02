@@ -4,7 +4,7 @@ require 'gruff'
 
 module Generators
   # Graph generator adapter class
-  class GraphGenerator
+  class Graph
     include CalculationHelpers
 
     GRAPH_DIMENSIONS = '1280x720'
