@@ -11,7 +11,7 @@ module Generators
     }.freeze
 
     def message(balances:)
-      <<~MESSAGE
+      <<~MESSAGE.strip
         #{header}
         #{format_balances(balances)}
       MESSAGE
@@ -30,9 +30,10 @@ module Generators
     def format_account(account)
       balance = format_amount(account['balance'] - account['creditLimit'])
       credit_limit = format_credit_limit(account['creditLimit'])
+      account_type = format_type(account['type'])
 
       <<~ACCOUNT
-        <b>#{TYPES_MAPPING[account['type']]}:</b> #{balance}#{credit_limit}
+        <b>#{account_type}:</b> #{balance}#{credit_limit}
       ACCOUNT
     end
 
@@ -45,6 +46,10 @@ module Generators
     def format_amount(amount)
       amount = amount.to_f / 100 # Convert from cents to main currency
       format('%.2f', amount)
+    end
+
+    def format_type(type)
+      TYPES_MAPPING[type] || type
     end
   end
 end
