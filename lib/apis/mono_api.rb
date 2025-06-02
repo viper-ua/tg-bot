@@ -70,12 +70,12 @@ module Apis
     def random_balances
       [
         {
-          'type' => 'Main Account',
+          'type' => 'white',
           'balance' => rand(100_000..1_000_000),
           'creditLimit' => 0
         },
         {
-          'type' => 'Credit Card',
+          'type' => 'black',
           'balance' => rand(-50_000..50_000),
           'creditLimit' => 100_000
         }

@@ -3,6 +3,13 @@
 module Generators
   # Class responsible for generating balance report messages
   class BalanceMessage
+    TYPES_MAPPING = {
+      'yellow' => '👶 Дитяча',
+      'eAid' => '🛟 єДопомога',
+      'black' => '🐈‍⬛ Кредитка',
+      'white' => '🐈 Біла'
+    }.freeze
+
     def message(balances:)
       <<~MESSAGE
         #{header}
@@ -25,7 +32,7 @@ module Generators
       credit_limit = format_credit_limit(account['creditLimit'])
 
       <<~ACCOUNT
-        <b>#{account['type']}:</b> #{balance}#{credit_limit}
+        <b>#{TYPES_MAPPING[account['type']]}:</b> #{balance}#{credit_limit}
       ACCOUNT
     end
 
