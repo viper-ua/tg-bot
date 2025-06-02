@@ -1,7 +1,7 @@
 rates.png
 ratios.png
 diff.png
-app.log
+app.log*
 .env*
 Dockerfile
 docker-compose.yml

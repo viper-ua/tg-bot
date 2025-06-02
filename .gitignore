@@ -2,7 +2,7 @@ db/
 rates.png
 ratios.png
 diff.png
-app.log
+app.log*
 .env
 Gemfile.lock
 .ruby-lsp
