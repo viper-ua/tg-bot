@@ -34,8 +34,9 @@ COPY --from=dependencies /usr/local/bundle /usr/local/bundle
 # Copying application code
 COPY . .
 
-# Create a wrapper script for running the app
-RUN touch /app/app.log && \
+# Create ./tmp directory and logs
+RUN mkdir -p ./tmp && \
+    touch /app/app.log && \
     chmod 644 /app/app.log
 
 # Command to execute when container starts

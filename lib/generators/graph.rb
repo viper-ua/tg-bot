@@ -16,7 +16,7 @@ module Generators
     attr_reader :rates
 
     # Generate graph of last rates
-    def buy_sell_graph(image_path: 'rates.png')
+    def buy_sell_graph(image_path: 'tmp/rates.png')
       candlestick_graph(image_path:) do |graph|
         rates.each do |rate|
           next graph.data(low: rate.buy, high: rate.sell, open: rate.sell, close: rate.buy) if min_diff?(rate)
@@ -30,7 +30,7 @@ module Generators
     end
 
     # Generate graph of last Sell/Buy ratios
-    def ratio_graph(image_path: 'ratios.png')
+    def ratio_graph(image_path: 'tmp/ratios.png')
       data_points = rates.map { |rate| ratio(rate) }
       line_graph(image_path:) do |graph|
         graph.title = 'USD Sell/Buy Ratios'
@@ -40,7 +40,7 @@ module Generators
       end
     end
 
-    def diff_graph(image_path: 'diff.png')
+    def diff_graph(image_path: 'tmp/diff.png')
       data_points = rates.map { |rate| conversion_diff(rate) }
       line_graph(image_path:) do |graph|
         graph.title = 'Conversion difference, $'

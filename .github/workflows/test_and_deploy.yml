@@ -34,6 +34,9 @@ jobs:
           ruby-version: '3.4'
           bundler-cache: true
 
+      - name: Set up tmp dir
+        run: mkdir -p ./tmp
+
       - name: Run tests
         run: bundle exec rspec
 

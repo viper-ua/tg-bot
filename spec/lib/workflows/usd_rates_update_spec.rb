@@ -44,7 +44,7 @@ RSpec.describe Workflows::UsdRatesUpdate do
           .with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
 
         expect(Apis::TelegramApi).to have_received(:send_media_message)
-          .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
+          .with(images: %w[tmp/rates.png tmp/ratios.png tmp/diff.png], message: be_a_valid_currency_message)
       end
     end
 
@@ -64,7 +64,7 @@ RSpec.describe Workflows::UsdRatesUpdate do
           .with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
 
         expect(Apis::TelegramApi).to have_received(:send_media_message)
-          .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
+          .with(images: %w[tmp/rates.png tmp/ratios.png tmp/diff.png], message: be_a_valid_currency_message)
       end
     end
 
@@ -105,7 +105,7 @@ RSpec.describe Workflows::UsdRatesUpdate do
 
         expect(logger).to have_received(:info).with(hash_including(test_run: true))
         expect(Apis::TelegramApi).to have_received(:send_media_message)
-          .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
+          .with(images: %w[tmp/rates.png tmp/ratios.png tmp/diff.png], message: be_a_valid_currency_message)
       end
     end
 
