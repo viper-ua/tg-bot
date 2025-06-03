@@ -11,9 +11,17 @@ RSpec.describe Apis::TelegramApi do
   let(:message) { 'Hello from VCR test!' }
 
   describe '.send_media_message' do
+    let(:api_instance) do
+      instance_double(
+        described_class,
+        send_media_message: [instance_double(Telegram::Bot::Types::Message)]
+      )
+    end
+
     it 'delegates to an instance method' do
-      expect_any_instance_of(described_class).to receive(:send_media_message)
+      allow(described_class).to receive(:new).and_return(api_instance)
       described_class.send_media_message(images:, message:, chat_id:)
+      expect(api_instance).to have_received(:send_media_message)
     end
   end
 
@@ -25,9 +33,19 @@ RSpec.describe Apis::TelegramApi do
   end
 
   describe '.send_message' do
+    let(:api_instance) do
+      instance_double(
+        described_class,
+        send_message: instance_double(Telegram::Bot::Types::Message)
+      )
+    end
+
     it 'delegates to an instance method' do
-      expect_any_instance_of(described_class).to receive(:send_message)
+      allow(described_class).to receive(:new).and_return(api_instance)
+
       described_class.send_message(text: message, chat_id:)
+
+      expect(api_instance).to have_received(:send_message)
     end
   end
 
@@ -39,25 +57,30 @@ RSpec.describe Apis::TelegramApi do
   end
 
   describe '#compose_media_group', :aggregate_failures do
-    it 'returns a hash with media array and files' do
-      result = telegram_api.send(:compose_media_group, images:, message:)
+    subject(:result) { telegram_api.send(:compose_media_group, images:, message:) }
+
+    it 'returns a hash containing media array and file attachments' do
       expect(result).to be_a(Hash)
       expect(result[:media]).to be_an(Array)
       expect(result[:media].size).to eq(images.size)
+    end
+
+    it 'includes all image files as attachments' do
       images.each do |image|
-        image_name = File.basename(image)
-        expect(result[image_name]).not_to be_nil
+        expect(result[File.basename(image)]).to be_a(Faraday::UploadIO)
       end
     end
   end
 
-  describe '#media_definition', :aggregeate_failures do
+  describe '#media_definition', :aggregate_failures do
     it 'returns an InputMediaPhoto object with correct values' do
       media = telegram_api.send(:media_definition, image_name: 'foo.png', message:)
       expect(media).to be_a(Telegram::Bot::Types::InputMediaPhoto)
-      expect(media.caption).to eq(message)
-      expect(media.media).to eq('attach://foo.png')
-      expect(media.parse_mode).to eq('HTML')
+        .and have_attributes(
+          caption: message,
+          media: 'attach://foo.png',
+          parse_mode: 'HTML'
+        )
     end
   end
 end

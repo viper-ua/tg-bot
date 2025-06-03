@@ -38,10 +38,10 @@ RSpec.describe Workflows::UsdRatesUpdate do
       end
 
       it 'fetches rates, builds rate object, saves it, and sends a message', :vcr do
-        expect(logger).to receive(:info)
-          .with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
-
         expect { run_workflow }.to change(CurrencyRate, :count).by(1)
+
+        expect(logger).to have_received(:info)
+          .with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
 
         expect(Apis::TelegramApi).to have_received(:send_media_message)
           .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
@@ -58,9 +58,10 @@ RSpec.describe Workflows::UsdRatesUpdate do
       end
 
       it 'fetches rates, builds rate object, saves it, and sends a message', :vcr do
-        expect(logger).to receive(:info).with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
-
         expect { run_workflow }.to change(CurrencyRate, :count).by(1)
+
+        expect(logger).to have_received(:info)
+          .with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
 
         expect(Apis::TelegramApi).to have_received(:send_media_message)
           .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
@@ -78,9 +79,11 @@ RSpec.describe Workflows::UsdRatesUpdate do
       end
 
       it 'fetches rates, builds rate object, but does not save or send a message', :vcr do
-        expect(logger).to receive(:info).with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
-
         expect { run_workflow }.not_to change(CurrencyRate, :count)
+
+        expect(logger).to have_received(:info)
+          .with(hash_including('buy' => 41.33, 'sell' => 41.8305, test_run: false))
+
         expect(Apis::TelegramApi).not_to have_received(:send_media_message)
       end
     end
@@ -98,10 +101,9 @@ RSpec.describe Workflows::UsdRatesUpdate do
       end
 
       it 'returns random rates, builds rate object, but does not save it, and sends message' do
-        expect(logger).to receive(:info).with(hash_including(test_run: true))
-
         expect { run_workflow }.not_to change(CurrencyRate, :count)
 
+        expect(logger).to have_received(:info).with(hash_including(test_run: true))
         expect(Apis::TelegramApi).to have_received(:send_media_message)
           .with(images: %w[rates.png ratios.png diff.png], message: be_a_valid_currency_message)
       end
@@ -118,8 +120,8 @@ RSpec.describe Workflows::UsdRatesUpdate do
       end
 
       it 'logs the error and does not raise it' do
-        expect(logger).to receive(:error).with("StandardError - Something went wrong\nline 1\nline 2")
         expect { run_workflow }.not_to raise_error
+        expect(logger).to have_received(:error).with("StandardError - Something went wrong\nline 1\nline 2")
       end
 
       it 'does not attempt to save or send message' do

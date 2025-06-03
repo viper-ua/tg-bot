@@ -9,11 +9,11 @@ RSpec.describe CurrencyRate do
       create(:currency_rate, created_at: 2.days.ago)
       newest_rate = create(:currency_rate, created_at: 1.day.ago)
 
-      expect(CurrencyRate.last_known_rate).to eq(newest_rate)
+      expect(described_class.last_known_rate).to eq(newest_rate)
     end
 
     it 'returns nil if no records yet' do
-      expect(CurrencyRate.last_known_rate).to be_nil
+      expect(described_class.last_known_rate).to be_nil
     end
   end
 
@@ -22,7 +22,7 @@ RSpec.describe CurrencyRate do
       it 'returns true' do
         create(:currency_rate, created_at: Time.now)
 
-        expect(CurrencyRate.rates_for_today?).to be true
+        expect(described_class.rates_for_today?).to be true
       end
     end
 
@@ -30,31 +30,31 @@ RSpec.describe CurrencyRate do
       it 'returns false' do
         create(:currency_rate, created_at: 1.day.ago)
 
-        expect(CurrencyRate.rates_for_today?).to be false
+        expect(described_class.rates_for_today?).to be false
       end
     end
   end
 
   describe '.last_rates' do
     before do
-      test_records_count = CurrencyRate::MAX_HISTORICAL_RECORDS + 1
+      test_records_count = described_class::MAX_HISTORICAL_RECORDS + 1
       test_records_count.times do |i|
         create(:currency_rate, created_at: (test_records_count - i).days.ago)
       end
     end
 
     it 'returns records ordered by date' do
-      rates = CurrencyRate.last_rates
+      rates = described_class.last_rates
       expect(rates.first.created_at).to be < rates.last.created_at
     end
 
-    it 'limits nuber of returned recoeds to MAX_HISTORICAL_RECORDS by default' do
-      expect(CurrencyRate.last_rates.count).to eq(CurrencyRate::MAX_HISTORICAL_RECORDS)
+    it 'limits number of returned records to MAX_HISTORICAL_RECORDS by default' do
+      expect(described_class.last_rates.count).to eq(described_class::MAX_HISTORICAL_RECORDS)
     end
 
     it 'allows providing own limit of records to return' do
       custom_limit = 10
-      expect(CurrencyRate.last_rates(custom_limit).count).to eq(custom_limit)
+      expect(described_class.last_rates(custom_limit).count).to eq(custom_limit)
     end
   end
 
