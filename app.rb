@@ -22,7 +22,7 @@ Rufus::Scheduler.new.tap do |scheduler|
   end
 
   # Check balances every day every 2 hours in 9:00 - 20:00
-  scheduler.cron '0 8-20/2 * * *' do
+  scheduler.cron '0 8,20 * * *' do
     Workflows::BalanceCheck.run(logger:, test_run:)
   end
 
